@@ -1,4 +1,4 @@
-package es.iesquevedo.config;
+package es.iesquevedo.descubreespana.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,7 +38,7 @@ public class ConfigOkHttpRetrofitDigi {
 
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.173:8080/servidor/")
+                .baseUrl("http://192.168.1.101:8080/servidor/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(clientOK)
                 .build();

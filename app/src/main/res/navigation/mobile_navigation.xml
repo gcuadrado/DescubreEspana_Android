@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="es.iesquevedo.descubreespana.ui.notifications.NotificationsFragment"
+        android:name="es.iesquevedo.descubreespana.ui.account.AccountFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 </navigation>

@@ -1,9 +1,9 @@
-package es.iesquevedo.servicios;
+package es.iesquevedo.descubreespana.servicios;
 
 import java.util.List;
 
-import es.iesquevedo.dao.PuntoInteresDao;
-import es.iesquevedo.modelo.dto.PuntoInteresDtoGetMaestro;
+import es.iesquevedo.descubreespana.dao.PuntoInteresDao;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 
 public class ServiciosPuntoInteres {
     private PuntoInteresDao puntoInteresDao;

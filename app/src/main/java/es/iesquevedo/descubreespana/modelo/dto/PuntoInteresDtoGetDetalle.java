@@ -1,4 +1,6 @@
-package es.iesquevedo.modelo.dto;
+package es.iesquevedo.descubreespana.modelo.dto;
+
+import java.util.Collection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +27,6 @@ public class PuntoInteresDtoGetDetalle {
     private Double longitud;
     private String enlaceInfo;
     private String contacto;
-    //private Collection<FotoPuntoInteresEntity> fotoPuntoInteresByIdPuntoInteres;
-   // private UsuarioEntity usuarioByIdUsuario;
+    private Collection<FotoPuntoInteresDtoGet> fotoPuntoInteresByIdPuntoInteres;
+    private UsuarioDtoGet usuarioByIdUsuario;
 }

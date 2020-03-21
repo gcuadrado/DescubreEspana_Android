@@ -1,4 +1,4 @@
-package es.iesquevedo.dao;
+package es.iesquevedo.descubreespana.dao;
 
 import android.util.Log;
 
@@ -6,9 +6,9 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-import es.iesquevedo.config.ConfigOkHttpRetrofitDigi;
-import es.iesquevedo.modelo.dto.PuntoInteresDtoGetMaestro;
-import es.iesquevedo.retrofit.ServerDataApi;
+import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofitDigi;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
+import es.iesquevedo.descubreespana.retrofit.ServerDataApi;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;

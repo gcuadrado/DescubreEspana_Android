@@ -1,4 +1,4 @@
-package es.iesquevedo.modelo.dto;
+package es.iesquevedo.descubreespana.modelo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

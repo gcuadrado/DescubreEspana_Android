@@ -1,4 +1,4 @@
-package es.iesquevedo.modelo.dto;
+package es.iesquevedo.descubreespana.modelo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioDtoPost {
+public class UsuarioDtoGet {
+    private int idUsuario;
     private String email;
-    private String password;
 }

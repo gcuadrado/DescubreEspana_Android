@@ -22,8 +22,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
-import es.iesquevedo.modelo.dto.PuntoInteresDtoGetMaestro;
-import es.iesquevedo.servicios.ServiciosPuntoInteres;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
+import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
