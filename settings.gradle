@@ -1,0 +1,2 @@
+rootProject.name='Descubre España'
+include ':app'
