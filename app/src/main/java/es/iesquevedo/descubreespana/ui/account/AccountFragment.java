@@ -20,8 +20,10 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.servicios.ServiciosUsuario;
+import io.vavr.control.Either;
 
 public class AccountFragment extends Fragment {
 
@@ -55,31 +57,36 @@ public class AccountFragment extends Fragment {
         });
     }
 
-    private class DoRegister extends AsyncTask<String,Void, UserKeystore>{
+    private class DoRegister extends AsyncTask<String,Void, Either<ApiError,UserKeystore>>{
 
         @Override
-        protected UserKeystore doInBackground(String... strings) {
-            return serviciosUsuario.registrar(strings[0],strings[1]);
+        protected Either<ApiError, UserKeystore> doInBackground(String... strings) {
+            return serviciosUsuario.registrarUsuario(strings[0],strings[1]);
         }
 
         @Override
-        protected void onPostExecute(UserKeystore userKeystore) {
-            try {
-                char[] password = etPassword.getText().toString().toCharArray();
-                ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(userKeystore.getKeystore(), Base64.URL_SAFE));
-                KeyStore ksLoad = KeyStore.getInstance("PKCS12");
-                ksLoad.load(input, password);
+        protected void onPostExecute(Either<ApiError,UserKeystore> result) {
+            if(result.isRight()) {
+                UserKeystore userKeystore=result.get();
+                try {
+                    char[] password = etPassword.getText().toString().toCharArray();
+                    ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(userKeystore.getKeystore(), Base64.URL_SAFE));
+                    KeyStore ksLoad = KeyStore.getInstance("PKCS12");
+                    ksLoad.load(input, password);
 
-                X509Certificate certLoad = (X509Certificate) ksLoad.getCertificate("publica");
-                KeyStore.PasswordProtection pt = new KeyStore.PasswordProtection(null);
-                KeyStore.PrivateKeyEntry privateKeyEntry =
-                        (KeyStore.PrivateKeyEntry) ksLoad.getEntry("privada", pt);
-                RSAPrivateKey keyLoad = (RSAPrivateKey) privateKeyEntry.getPrivateKey();
-                System.out.println(certLoad.getIssuerX500Principal());
-                Toast.makeText(requireContext(),certLoad.getIssuerX500Principal().toString(),Toast.LENGTH_LONG).show();
+                    X509Certificate certLoad = (X509Certificate) ksLoad.getCertificate("publica");
+                    KeyStore.PasswordProtection pt = new KeyStore.PasswordProtection(null);
+                    KeyStore.PrivateKeyEntry privateKeyEntry =
+                            (KeyStore.PrivateKeyEntry) ksLoad.getEntry("privada", pt);
+                    RSAPrivateKey keyLoad = (RSAPrivateKey) privateKeyEntry.getPrivateKey();
+                    System.out.println(certLoad.getIssuerX500Principal());
+                    Toast.makeText(requireContext(), certLoad.getIssuerX500Principal().toString(), Toast.LENGTH_LONG).show();
 
-            }catch (Exception e){
-                Toast.makeText(requireContext(),"Error",Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show();
+                }
+            }else{
+                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }

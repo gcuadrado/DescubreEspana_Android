@@ -1,16 +1,15 @@
 package es.iesquevedo.descubreespana.dao;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 
-import java.util.List;
+import java.net.HttpURLConnection;
 
 import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofitDigi;
+import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
-import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
 import es.iesquevedo.descubreespana.retrofit.ServerDataApi;
+import io.vavr.control.Either;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -24,18 +23,21 @@ public class UsuarioDao {
         gson=ConfigOkHttpRetrofitDigi.getInstance().getGson();
     }
 
-    public UserKeystore registrarUsuario(UsuarioDtoPost usuarioDtoPost){
-        UserKeystore userKeystore=null;
+
+   public Either<ApiError, UserKeystore> registrarUsuario(UsuarioDtoPost usuario)  {
+        Either<ApiError,UserKeystore> result;
+       ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<UserKeystore> call = serverDataApi.registrar(usuario);
         try {
-            ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
-            Call<UserKeystore> call = serverDataApi.registrar(usuarioDtoPost);
             Response<UserKeystore> response = call.execute();
             if (response.isSuccessful()) {
-                userKeystore=response.body();
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
             }
         }catch (Exception e){
-            Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
         }
-        return userKeystore;
+        return result;
     }
 }

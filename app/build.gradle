@@ -28,6 +28,11 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/INDEX.LIST'
+    }
 }
 
 dependencies {
@@ -50,4 +55,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    implementation 'io.vavr:vavr:1.0.0-alpha-3'
+    implementation 'org.hibernate:hibernate-validator:6.1.2.Final'
+    // https://mvnrepository.com/artifact/org.glassfish/javax.el
+    implementation group: 'org.glassfish', name: 'javax.el', version: '3.0.0'
+
+    annotationProcessor 'org.hibernate.validator:hibernate-validator-annotation-processor:6.1.2.Final'
 }
