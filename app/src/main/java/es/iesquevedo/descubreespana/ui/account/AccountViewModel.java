@@ -4,16 +4,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
+
 public class AccountViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<String> mEmail;
+    private MutableLiveData<String> mPassword;
+    private MutableLiveData<UsuarioDtoGet> mUsuario;
 
     public AccountViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        mEmail = new MutableLiveData<>();
     }
 
     public LiveData<String> getText() {
-        return mText;
+        return mEmail;
     }
 }

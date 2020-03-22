@@ -4,6 +4,7 @@ import java.util.List;
 
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
+import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,4 +20,7 @@ public interface ServerDataApi {
 
    @POST("api/usuario/registro")
     Call<UserKeystore> registrar(@Body UsuarioDtoPost usuarioDtoPost);
+
+   @POST("api/usuario/login")
+    Call<UsuarioDtoGet> login(@Body UsuarioDtoPost usuario);
 }
