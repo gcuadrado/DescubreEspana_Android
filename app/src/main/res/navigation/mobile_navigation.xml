@@ -19,16 +19,12 @@
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="es.iesquevedo.descubreespana.ui.account.AccountFragment"
+        android:name="es.iesquevedo.descubreespana.ui.login.LoginFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_account" >
-        <action
-            android:id="@+id/action_navigation_notifications_to_userAccountFragment"
-            app:destination="@id/userAccountFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_login" />
     <fragment
         android:id="@+id/userAccountFragment"
-        android:name="es.iesquevedo.descubreespana.ui.UserAccountFragment"
+        android:name="es.iesquevedo.descubreespana.ui.useraccount.UserAccountFragment"
         android:label="user_account_fragment"
         tools:layout="@layout/user_account_fragment" />
 </navigation>

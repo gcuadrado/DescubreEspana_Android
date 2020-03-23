@@ -50,17 +50,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        mMapFragment =(SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+        mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-        if(mMapFragment ==null){
-            FragmentManager fm=getChildFragmentManager();
-            FragmentTransaction ft=fm.beginTransaction();
-            mMapFragment =SupportMapFragment.newInstance();
+        if (mMapFragment == null) {
+            FragmentManager fm = getChildFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            mMapFragment = SupportMapFragment.newInstance();
             ft.replace(R.id.map, mMapFragment);
             ft.commit();
         }
         mMapFragment.getMapAsync(this);
-        serviciosPuntoInteres=new ServiciosPuntoInteres();
+        serviciosPuntoInteres = new ServiciosPuntoInteres();
        /* homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
@@ -77,9 +77,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     LOCATIOS_PERMISSION_REQUEST);
-        }else{
+        } else {
             mMap.setMyLocationEnabled(true);
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
@@ -87,21 +87,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                               mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),10));
+                                if (homeViewModel.getCameraPosition().getValue() == null) {
+                                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12));
+                                }
                             }
                         }
                     });
         }
 
 
-        if(homeViewModel.getCameraPosition().getValue()!=null){
+        if (homeViewModel.getCameraPosition().getValue() != null) {
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(homeViewModel.getCameraPosition().getValue()));
         }
 
         new GetPois().execute();
     }
 
-    private class GetPois extends AsyncTask<Void,Void, List<PuntoInteresDtoGetMaestro>>{
+    private class GetPois extends AsyncTask<Void, Void, List<PuntoInteresDtoGetMaestro>> {
 
         @Override
         protected List<PuntoInteresDtoGetMaestro> doInBackground(Void... voids) {
@@ -110,9 +112,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPostExecute(List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros) {
-            if(mMap!=null && puntoInteresDtoGetMaestros!=null){
-                for (PuntoInteresDtoGetMaestro poi: puntoInteresDtoGetMaestros){
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(),poi.getLongitud())).title(poi.getNombre()));
+            if (mMap != null && puntoInteresDtoGetMaestros != null) {
+                for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(), poi.getLongitud())).title(poi.getNombre()));
                 }
             }
         }
@@ -139,7 +141,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(mMap!=null){
+        if (mMap != null) {
             homeViewModel.getCameraPosition().setValue(mMap.getCameraPosition());
         }
     }

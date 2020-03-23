@@ -1,7 +1,6 @@
-package es.iesquevedo.descubreespana.ui;
+package es.iesquevedo.descubreespana.ui.useraccount;
 
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 
@@ -13,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.UserAccountFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 
@@ -41,7 +39,7 @@ public class UserAccountFragment extends Fragment {
 
 
         UsuarioDtoGet usuarioDtoGet=mViewModel.getmUsuario().getValue();
-        binding.tvUsername.setText(usuarioDtoGet.getEmail());
+        binding.tvUsername.setText(usuarioDtoGet.getEmail()+usuarioDtoGet.getTipoUsuario());
     }
 
 }

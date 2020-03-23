@@ -1,4 +1,4 @@
-package es.iesquevedo.descubreespana.ui;
+package es.iesquevedo.descubreespana.ui.useraccount;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

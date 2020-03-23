@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context="es.iesquevedo.descubreespana.ui.account.AccountFragment">
+    tools:context="es.iesquevedo.descubreespana.ui.login.LoginFragment">
 
     <EditText
         android:id="@+id/etEmail"

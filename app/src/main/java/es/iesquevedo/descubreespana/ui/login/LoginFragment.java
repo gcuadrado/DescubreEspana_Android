@@ -1,4 +1,4 @@
-package es.iesquevedo.descubreespana.ui.account;
+package es.iesquevedo.descubreespana.ui.login;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -12,12 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.SavedStateViewModelFactory;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -28,28 +24,28 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
 import es.iesquevedo.descubreespana.R;
-import es.iesquevedo.descubreespana.databinding.FragmentAccountBinding;
+import es.iesquevedo.descubreespana.databinding.FragmentLoginBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.servicios.ServiciosUsuario;
-import es.iesquevedo.descubreespana.ui.UserAccountViewModel;
+import es.iesquevedo.descubreespana.ui.useraccount.UserAccountViewModel;
 import io.vavr.control.Either;
 
-public class AccountFragment extends Fragment {
+public class LoginFragment extends Fragment {
 
-    private AccountViewModel accountViewModel;
+    private LoginViewModel loginViewModel;
     private UserAccountViewModel userAccountViewModel;
     private ServiciosUsuario serviciosUsuario;
     private EditText etEmail;
     private EditText etPassword;
-    private FragmentAccountBinding binding;
+    private FragmentLoginBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        accountViewModel =new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        loginViewModel =new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         userAccountViewModel=new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        binding = FragmentAccountBinding.inflate(inflater, container, false);
+        binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -75,8 +71,8 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        etEmail.setText(accountViewModel.getEmail().getValue());
-        etPassword.setText(accountViewModel.getmPassword().getValue());
+        etEmail.setText(loginViewModel.getEmail().getValue());
+        etPassword.setText(loginViewModel.getmPassword().getValue());
     }
 
     private class DoRegister extends AsyncTask<String,Void, Either<ApiError,UserKeystore>>{
@@ -130,7 +126,7 @@ public class AccountFragment extends Fragment {
                 userAccountViewModel.getmUsuario().setValue(usuarioDtoGet);
                 Toast.makeText(requireContext(),usuarioDtoGet.getIdUsuario()+":"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(AccountFragmentDirections.actionNavigationNotificationsToUserAccountFragment());
+                navController.navigate(R.id.userAccountFragment);
             }else{
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -142,7 +138,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        accountViewModel.getEmail().setValue(etEmail.getText().toString());
-        accountViewModel.getmPassword().setValue(etPassword.getText().toString());
+        loginViewModel.getEmail().setValue(etEmail.getText().toString());
+        loginViewModel.getmPassword().setValue(etPassword.getText().toString());
     }
 }

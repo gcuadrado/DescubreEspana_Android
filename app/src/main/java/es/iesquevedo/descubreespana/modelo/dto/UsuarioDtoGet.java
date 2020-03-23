@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 public class UsuarioDtoGet implements Parcelable {
     private int idUsuario;
     private String email;
+    private int tipoUsuario;
+
 
     @Override
     public int describeContents() {
@@ -25,14 +27,16 @@ public class UsuarioDtoGet implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.idUsuario);
         dest.writeString(this.email);
+        dest.writeInt(this.tipoUsuario);
     }
 
     protected UsuarioDtoGet(Parcel in) {
         this.idUsuario = in.readInt();
         this.email = in.readString();
+        this.tipoUsuario = in.readInt();
     }
 
-    public static final Parcelable.Creator<UsuarioDtoGet> CREATOR = new Parcelable.Creator<UsuarioDtoGet>() {
+    public static final Creator<UsuarioDtoGet> CREATOR = new Creator<UsuarioDtoGet>() {
         @Override
         public UsuarioDtoGet createFromParcel(Parcel source) {
             return new UsuarioDtoGet(source);
