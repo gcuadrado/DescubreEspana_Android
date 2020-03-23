@@ -5,13 +5,12 @@ import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
-import es.iesquevedo.descubreespana.utils.Validacion;
 import io.vavr.control.Either;
 
 
 public class ServiciosUsuario {
     private UsuarioDao usuarioDao;
-    private Validacion validacion;
+
 
     public ServiciosUsuario() {
         usuarioDao = new UsuarioDao();

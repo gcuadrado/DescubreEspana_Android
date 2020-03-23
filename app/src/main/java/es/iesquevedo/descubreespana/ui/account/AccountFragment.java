@@ -18,6 +18,8 @@ import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
@@ -25,16 +27,19 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
+import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.FragmentAccountBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.servicios.ServiciosUsuario;
+import es.iesquevedo.descubreespana.ui.UserAccountViewModel;
 import io.vavr.control.Either;
 
 public class AccountFragment extends Fragment {
 
     private AccountViewModel accountViewModel;
+    private UserAccountViewModel userAccountViewModel;
     private ServiciosUsuario serviciosUsuario;
     private EditText etEmail;
     private EditText etPassword;
@@ -43,6 +48,7 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         accountViewModel =new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        userAccountViewModel=new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -121,8 +127,10 @@ public class AccountFragment extends Fragment {
         protected void onPostExecute(Either<ApiError, UsuarioDtoGet> result) {
             if(result.isRight()){
                 UsuarioDtoGet usuarioDtoGet=result.get();
-                accountViewModel.getmUsuario().setValue(usuarioDtoGet);
+                userAccountViewModel.getmUsuario().setValue(usuarioDtoGet);
                 Toast.makeText(requireContext(),usuarioDtoGet.getIdUsuario()+":"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(AccountFragmentDirections.actionNavigationNotificationsToUserAccountFragment());
             }else{
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
             }

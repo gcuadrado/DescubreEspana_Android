@@ -21,6 +21,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import es.iesquevedo.descubreespana.databinding.ActivityMainBinding;
+import es.iesquevedo.descubreespana.ui.UserAccountViewModel;
 import es.iesquevedo.descubreespana.ui.account.AccountViewModel;
 import es.iesquevedo.descubreespana.ui.home.HomeViewModel;
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         //  NavigationUI.setupWithNavController(navView, navController);
 
-        AccountViewModel accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        UserAccountViewModel userAccountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
 
 
         navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -56,10 +57,10 @@ public class MainActivity extends AppCompatActivity {
                         navController.navigate(R.id.navigation_dashboard);
                         break;
                     case R.id.navigation_notifications:
-                        if(accountViewModel.getmUsuario().getValue()==null) {
+                        if(userAccountViewModel.getmUsuario().getValue()==null) {
                             navController.navigate(R.id.navigation_notifications);
                         }else{
-                            navController.navigate(R.id.navigation_dashboard);
+                            navController.navigate(R.id.userAccountFragment);
                         }
                         break;
                 }
