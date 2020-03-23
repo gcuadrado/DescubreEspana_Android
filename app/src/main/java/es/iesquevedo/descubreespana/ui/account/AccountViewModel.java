@@ -14,9 +14,22 @@ public class AccountViewModel extends ViewModel {
 
     public AccountViewModel() {
         mEmail = new MutableLiveData<>();
+        mPassword = new MutableLiveData<>();
+        mUsuario = new MutableLiveData<>();
     }
 
-    public LiveData<String> getText() {
+    public MutableLiveData<String> getEmail() {
         return mEmail;
     }
+
+
+    public MutableLiveData<String> getmPassword() {
+        return mPassword;
+    }
+
+
+    public MutableLiveData<UsuarioDtoGet> getmUsuario() {
+        return mUsuario;
+    }
+
 }

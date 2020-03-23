@@ -14,7 +14,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.AbstractSavedStateViewModelFactory;
+import androidx.lifecycle.SavedStateViewModelFactory;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +25,6 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
-import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.FragmentAccountBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
@@ -41,8 +42,7 @@ public class AccountFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        accountViewModel =
-                ViewModelProviders.of(this).get(AccountViewModel.class);
+        accountViewModel =new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -68,6 +68,9 @@ public class AccountFragment extends Fragment {
                 new DoLogin().execute(etEmail.getText().toString(), etPassword.getText().toString());
             }
         });
+
+        etEmail.setText(accountViewModel.getEmail().getValue());
+        etPassword.setText(accountViewModel.getmPassword().getValue());
     }
 
     private class DoRegister extends AsyncTask<String,Void, Either<ApiError,UserKeystore>>{
@@ -118,6 +121,7 @@ public class AccountFragment extends Fragment {
         protected void onPostExecute(Either<ApiError, UsuarioDtoGet> result) {
             if(result.isRight()){
                 UsuarioDtoGet usuarioDtoGet=result.get();
+                accountViewModel.getmUsuario().setValue(usuarioDtoGet);
                 Toast.makeText(requireContext(),usuarioDtoGet.getIdUsuario()+":"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
@@ -125,22 +129,12 @@ public class AccountFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-       outState.putString("email",etEmail.getText().toString());
-        outState.putString("password",etPassword.getText().toString());
-    }
-
 
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null) {
-            etEmail.setText(savedInstanceState.getString("email", ""));
-            etPassword.setText(savedInstanceState.getString("password", ""));
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        accountViewModel.getEmail().setValue(etEmail.getText().toString());
+        accountViewModel.getmPassword().setValue(etPassword.getText().toString());
     }
-
-
 }
