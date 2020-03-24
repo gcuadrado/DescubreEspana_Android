@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ServerDataApi {
    /* @POST("login")
@@ -23,4 +24,7 @@ public interface ServerDataApi {
 
    @POST("api/usuario/login")
     Call<UsuarioDtoGet> login(@Body UsuarioDtoPost usuario);
+
+   @GET("reestablecer")
+    Call<String> reestablecerPassword(@Query("email") String email);
 }

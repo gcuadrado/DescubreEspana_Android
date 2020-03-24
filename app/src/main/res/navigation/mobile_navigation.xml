@@ -18,7 +18,7 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_login"
         android:name="es.iesquevedo.descubreespana.ui.login.LoginFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_login" />
@@ -26,5 +26,15 @@
         android:id="@+id/userAccountFragment"
         android:name="es.iesquevedo.descubreespana.ui.useraccount.UserAccountFragment"
         android:label="user_account_fragment"
-        tools:layout="@layout/user_account_fragment" />
+        tools:layout="@layout/user_account_fragment" >
+        <action
+            android:id="@+id/action_userAccountFragment_to_navigation_login"
+            app:destination="@id/navigation_login"
+            app:popUpTo="@id/navigation_login"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/registroFragment"
+        android:name="es.iesquevedo.descubreespana.ui.registro.RegistroFragment"
+        android:label="RegistroFragment" />
 </navigation>

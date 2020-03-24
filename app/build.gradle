@@ -56,5 +56,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     implementation 'io.vavr:vavr:1.0.0-alpha-3'
+    implementation 'me.relex:circleindicator:2.1.4'
 
 }

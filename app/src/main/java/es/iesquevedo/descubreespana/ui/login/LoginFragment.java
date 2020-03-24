@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -40,6 +41,7 @@ public class LoginFragment extends Fragment {
     private EditText etEmail;
     private EditText etPassword;
     private FragmentLoginBinding binding;
+    private NavController navController;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,18 +54,23 @@ public class LoginFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Button registerButton = binding.registerButton;
-        Button loginButton = binding.loginButton;
+
         etEmail = binding.etEmail;
         etPassword = binding.etPassword;
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
 
         serviciosUsuario = new ServiciosUsuario();
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new DoRegister().execute(etEmail.getText().toString(), etPassword.getText().toString());
-            }
-        });
+
+        setListeners();
+
+        etEmail.setText(loginViewModel.getEmail().getValue());
+        etPassword.setText(loginViewModel.getmPassword().getValue());
+    }
+
+    private void setListeners() {
+        Button registerButton = binding.registerButton;
+        Button loginButton = binding.loginButton;
+        Button resetPasswordButton=binding.restPasswordButton;
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,46 +78,20 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        etEmail.setText(loginViewModel.getEmail().getValue());
-        etPassword.setText(loginViewModel.getmPassword().getValue());
-    }
-
-    private class DoRegister extends AsyncTask<String,Void, Either<ApiError,UserKeystore>>{
-
-        @Override
-        protected Either<ApiError, UserKeystore> doInBackground(String... strings) {
-            return serviciosUsuario.registrarUsuario(strings[0],strings[1]);
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError,UserKeystore> result) {
-            if(result.isRight()) {
-                UserKeystore userKeystore=result.get();
-                try {
-                    char[] password = etPassword.getText().toString().toCharArray();
-                    ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(userKeystore.getKeystore(), Base64.URL_SAFE));
-                    KeyStore ksLoad = KeyStore.getInstance("PKCS12");
-                    ksLoad.load(input, password);
-
-                    X509Certificate certLoad = (X509Certificate) ksLoad.getCertificate("publica");
-                    KeyStore.PasswordProtection pt = new KeyStore.PasswordProtection(null);
-                    KeyStore.PrivateKeyEntry privateKeyEntry =
-                            (KeyStore.PrivateKeyEntry) ksLoad.getEntry("privada", pt);
-                    RSAPrivateKey keyLoad = (RSAPrivateKey) privateKeyEntry.getPrivateKey();
-
-                    FileOutputStream fos = requireContext().openFileOutput("keystore.pfx", Context.MODE_PRIVATE);
-                    ksLoad.store(fos, password);
-                    fos.close();
-                    Toast.makeText(requireContext(), certLoad.getSubjectX500Principal().toString(), Toast.LENGTH_LONG).show();
-
-                } catch (Exception e) {
-                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show();
-                }
-            }else{
-                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(R.id.registroFragment);
             }
-        }
+        });
+        resetPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ResetPassword().execute(etEmail.getText().toString());
+            }
+        });
     }
+
 
     private class DoLogin extends AsyncTask<String,Void, Either<ApiError,UsuarioDtoGet>>{
 
@@ -125,10 +106,42 @@ public class LoginFragment extends Fragment {
                 UsuarioDtoGet usuarioDtoGet=result.get();
                 userAccountViewModel.getmUsuario().setValue(usuarioDtoGet);
                 Toast.makeText(requireContext(),usuarioDtoGet.getIdUsuario()+":"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.userAccountFragment);
             }else{
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class ResetPassword extends AsyncTask<String,Void,Either<ApiError,String>>{
+
+        @Override
+        protected Either<ApiError, String> doInBackground(String... strings) {
+            return serviciosUsuario.reestablecerPassword(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Either<ApiError, String> result) {
+            if(result.isRight()){
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("¡Hecho!")
+                        .setMessage("Se ha enviado una neuva contraseña a tu email")
+
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                       .setNeutralButton("OK",null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }else{
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Error :(")
+                        .setMessage(result.getLeft().getMessage())
+
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                        .setNeutralButton("OK",null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         }
     }

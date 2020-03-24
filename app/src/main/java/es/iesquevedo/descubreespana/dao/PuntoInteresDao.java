@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofitDigi;
+import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.retrofit.ServerDataApi;
 import retrofit2.Call;
@@ -18,8 +18,8 @@ public class PuntoInteresDao {
     private Gson gson;
 
     public PuntoInteresDao() {
-        retrofit= ConfigOkHttpRetrofitDigi.getInstance().getRetrofit();
-        gson=ConfigOkHttpRetrofitDigi.getInstance().getGson();
+        retrofit= ConfigOkHttpRetrofit.getInstance().getRetrofit();
+        gson=ConfigOkHttpRetrofit.getInstance().getGson();
     }
 
     public List<PuntoInteresDtoGetMaestro> getAll(){

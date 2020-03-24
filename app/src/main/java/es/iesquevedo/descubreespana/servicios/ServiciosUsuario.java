@@ -1,5 +1,7 @@
 package es.iesquevedo.descubreespana.servicios;
 
+import java.io.IOException;
+
 import es.iesquevedo.descubreespana.dao.UsuarioDao;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
@@ -43,14 +45,23 @@ public class ServiciosUsuario {
                 .email(email)
                 .password(password)
                 .build();
-        // String erroresValidacion = validacion.validarObjeto(usuarioDtoPost);
-        String erroresValidacion="";
-        if (erroresValidacion.length() == 0) {
+
+        if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && !password.isEmpty()) {
             result = usuarioDao.loginUsuario(usuarioDtoPost);
         } else {
-            result = Either.left(new ApiError(400, erroresValidacion));
+            result = Either.left(new ApiError(400, "Asegurate de que has introducido un email válido y la contraseña no está vacía"));
         }
 
+        return result;
+    }
+
+    public Either<ApiError, String> reestablecerPassword(String email) {
+        Either<ApiError, String> result = null;
+        if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            result = usuarioDao.reestablecerPassword(email);
+        } else {
+            result = Either.left(new ApiError(400, "No has intorduci un email válido"));
+        }
         return result;
     }
 }

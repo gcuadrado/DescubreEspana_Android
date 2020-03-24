@@ -6,4 +6,16 @@
     <string name="title_activity_maps">Map</string>
     <string name="boton_registro">Registrarse</string>
     <string name="boton_login">Iniciar sesión</string>
+    <string name="cerrar_sesion_button">Cerrar sesión</string>
+    <string name="reset_password_button">Olvidé mi contraseña</string>
+    <string name="tv_info_basica">Información Básica:</string>
+    <string name="tv_fecha">Fecha:</string>
+    <string name="tv_categoria">Categoría:</string>
+    <string name="tv_direccion">Dirección:</string>
+    <string name="tv_accesibilidad">Accesibilidad:</string>
+    <string name="tv_contacto">Contacto:</string>
+    <string name="tv_enlace_info">Más información:</string>
+    <string name="tv_puntuacion">Puntuación:</string>
+    <string name="tv_horario">Horario:</string>
+    <string name="tv_coste">Coste:</string>
 </resources>
