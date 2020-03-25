@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -17,6 +18,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -26,14 +29,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.modelo.ApiError;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
+import es.iesquevedo.descubreespana.ui.useraccount.UserAccountFragmentDirections;
+import io.vavr.control.Either;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
@@ -43,6 +51,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private FusedLocationProviderClient fusedLocationClient;
+    private NavController navController;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -61,12 +70,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
         mMapFragment.getMapAsync(this);
         serviciosPuntoInteres = new ServiciosPuntoInteres();
-       /* homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });*/
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         return root;
     }
 
@@ -101,21 +105,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
         new GetPois().execute();
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                navController.navigate(HomeFragmentDirections.actionNavigationHomeToDetallePoi((PuntoInteresDtoGetMaestro) marker.getTag()));
+            }
+        });
     }
 
-    private class GetPois extends AsyncTask<Void, Void, List<PuntoInteresDtoGetMaestro>> {
+    private class GetPois extends AsyncTask<Void, Void, Either<ApiError, List<PuntoInteresDtoGetMaestro>>> {
 
         @Override
-        protected List<PuntoInteresDtoGetMaestro> doInBackground(Void... voids) {
+        protected Either<ApiError, List<PuntoInteresDtoGetMaestro>> doInBackground(Void... voids) {
             return serviciosPuntoInteres.getAll();
         }
 
         @Override
-        protected void onPostExecute(List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros) {
-            if (mMap != null && puntoInteresDtoGetMaestros != null) {
-                for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(), poi.getLongitud())).title(poi.getNombre()));
+        protected void onPostExecute(Either<ApiError, List<PuntoInteresDtoGetMaestro>> result) {
+            if (result.isRight()) {
+                List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros = result.get();
+                if (mMap != null && puntoInteresDtoGetMaestros != null) {
+                    for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(), poi.getLongitud())).title(poi.getNombre()));
+                        marker.setTag(poi);
+                    }
                 }
+            } else {
+                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }

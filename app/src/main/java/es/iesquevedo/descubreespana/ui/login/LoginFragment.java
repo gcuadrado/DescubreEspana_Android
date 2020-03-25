@@ -1,9 +1,7 @@
 package es.iesquevedo.descubreespana.ui.login;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +16,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.security.KeyStore;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.FragmentLoginBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
-import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.servicios.ServiciosUsuario;
 import es.iesquevedo.descubreespana.ui.useraccount.UserAccountViewModel;
@@ -47,24 +38,26 @@ public class LoginFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         loginViewModel =new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         userAccountViewModel=new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        binding = FragmentLoginBinding.inflate(inflater, container, false);
+        /*if(loginViewModel.getBinding().getValue()!=null){
+            binding=loginViewModel.getBinding().getValue();
+        }else {
+            binding = FragmentLoginBinding.inflate(inflater, container, false);
+        }*/
+        binding=FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         etEmail = binding.etEmail;
         etPassword = binding.etPassword;
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-
         serviciosUsuario = new ServiciosUsuario();
-
         setListeners();
 
-        etEmail.setText(loginViewModel.getEmail().getValue());
-        etPassword.setText(loginViewModel.getmPassword().getValue());
+       // etEmail.setText(loginViewModel.getEmail().getValue());
+       // etPassword.setText(loginViewModel.getmPassword().getValue());
     }
 
     private void setListeners() {
@@ -153,5 +146,6 @@ public class LoginFragment extends Fragment {
         super.onDestroyView();
         loginViewModel.getEmail().setValue(etEmail.getText().toString());
         loginViewModel.getmPassword().setValue(etPassword.getText().toString());
+        loginViewModel.getBinding().setValue(binding);
     }
 }

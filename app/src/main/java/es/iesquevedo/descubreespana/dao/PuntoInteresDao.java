@@ -4,11 +4,17 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
+import es.iesquevedo.descubreespana.modelo.ApiError;
+import es.iesquevedo.descubreespana.modelo.UserKeystore;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
+import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
 import es.iesquevedo.descubreespana.retrofit.ServerDataApi;
+import io.vavr.control.Either;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -22,18 +28,40 @@ public class PuntoInteresDao {
         gson=ConfigOkHttpRetrofit.getInstance().getGson();
     }
 
-    public List<PuntoInteresDtoGetMaestro> getAll(){
-        List<PuntoInteresDtoGetMaestro> pois=null;
+    public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAll()  {
+        Either<ApiError,List<PuntoInteresDtoGetMaestro>> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<List<PuntoInteresDtoGetMaestro>> call = serverDataApi.getAllPois();
         try {
-            ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
-            Call<List<PuntoInteresDtoGetMaestro>> call = serverDataApi.getAllPois();
             Response<List<PuntoInteresDtoGetMaestro>> response = call.execute();
             if (response.isSuccessful()) {
-                pois=response.body();
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
             }
         }catch (Exception e){
             Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
         }
-        return pois;
+        return result;
+    }
+
+
+    public Either<ApiError, PuntoInteresDtoGetDetalle> get(int id)  {
+        Either<ApiError,PuntoInteresDtoGetDetalle> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<PuntoInteresDtoGetDetalle> call = serverDataApi.getPoi(id);
+        try {
+            Response<PuntoInteresDtoGetDetalle> response = call.execute();
+            if (response.isSuccessful()) {
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
+            }
+        }catch (Exception e){
+            Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
+        }
+        return result;
     }
 }

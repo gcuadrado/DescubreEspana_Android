@@ -9,7 +9,11 @@
         android:id="@+id/navigation_home"
         android:name="es.iesquevedo.descubreespana.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_detallePoi"
+            app:destination="@id/detallePoi" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -37,4 +41,13 @@
         android:id="@+id/registroFragment"
         android:name="es.iesquevedo.descubreespana.ui.registro.RegistroFragment"
         android:label="RegistroFragment" />
+    <fragment
+        android:id="@+id/detallePoi"
+        android:name="es.iesquevedo.descubreespana.ui.detalle_poi.DetallePoi"
+        android:label="detalle_poi_fragment"
+        tools:layout="@layout/detalle_poi_fragment" >
+        <argument
+            android:name="puntoInteres"
+            app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro" />
+    </fragment>
 </navigation>

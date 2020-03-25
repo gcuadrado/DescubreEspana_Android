@@ -42,20 +42,22 @@ public class MainActivity extends AppCompatActivity {
         navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_home:
-                        navController.navigate(R.id.navigation_home);
-                        break;
-                    case R.id.navigation_dashboard:
-                        navController.navigate(R.id.navigation_dashboard);
-                        break;
-                    case R.id.navigation_login:
-                        if(userAccountViewModel.getmUsuario().getValue()==null) {
-                            navController.navigate(R.id.navigation_login);
-                        }else{
-                            navController.navigate(R.id.userAccountFragment);
-                        }
-                        break;
+                if (navView.getSelectedItemId() != item.getItemId()) {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_home:
+                                navController.navigate(R.id.navigation_home);
+                            break;
+                        case R.id.navigation_dashboard:
+                            navController.navigate(R.id.navigation_dashboard);
+                            break;
+                        case R.id.navigation_login:
+                            if (userAccountViewModel.getmUsuario().getValue() == null) {
+                                    navController.navigate(R.id.navigation_login);
+                            } else {
+                                    navController.navigate(R.id.userAccountFragment);
+                            }
+                            break;
+                    }
                 }
                 return true;
             }
@@ -63,4 +65,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if(binding.navView.getSelectedItemId()==R.id.navigation_home){
+            finishAffinity();
+        }
+    }
 }
