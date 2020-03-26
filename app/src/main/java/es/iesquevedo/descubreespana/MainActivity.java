@@ -65,10 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
-    public void onBackPressed() {
-        if(binding.navView.getSelectedItemId()==R.id.navigation_home){
-            finishAffinity();
-        }
+    public boolean onSupportNavigateUp() {
+        return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()
+                || super.onSupportNavigateUp();
     }
 }

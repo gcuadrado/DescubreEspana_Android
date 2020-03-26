@@ -1,7 +1,6 @@
 package es.iesquevedo.descubreespana.ui.detalle_poi;
 
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,10 +24,8 @@ import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
 import es.iesquevedo.descubreespana.utils.VPGaleriaAdapter;
 import io.vavr.control.Either;
-import me.relex.circleindicator.CircleIndicator;
-import me.relex.circleindicator.CircleIndicator3;
 
-public class DetallePoi extends Fragment {
+public class DetallePoiFragment extends Fragment {
 
     private DetallePoiViewModel detallePoiViewModel;
     private DetallePoiFragmentBinding binding;
@@ -36,8 +33,8 @@ public class DetallePoi extends Fragment {
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private NavController navController;
 
-    public static DetallePoi newInstance() {
-        return new DetallePoi();
+    public static DetallePoiFragment newInstance() {
+        return new DetallePoiFragment();
     }
 
     @Override
@@ -51,7 +48,7 @@ public class DetallePoi extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        poiMaestro=DetallePoiArgs.fromBundle(getArguments()).getPuntoInteres();
+        poiMaestro=DetallePoiFragmentArgs.fromBundle(getArguments()).getPuntoInteres();
         serviciosPuntoInteres=new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
 
@@ -60,6 +57,8 @@ public class DetallePoi extends Fragment {
 
        new GetPoiDetalle().execute(poiMaestro.getIdPuntoInteres());
     }
+
+
 
     private class GetPoiDetalle extends AsyncTask<Integer,Void, Either<ApiError,PuntoInteresDtoGetDetalle>>{
 
@@ -82,6 +81,10 @@ public class DetallePoi extends Fragment {
                 binding.detallesCoste.setText(poi.getCoste().toString());
                 binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poi));
                 binding.indicator.setViewPager(binding.viewPagerGaleria);
+                if(poi.getPuntuacion()!=null) {
+                    binding.detallesPuntuacion.setText(poi.getPuntuacion().toString());
+                    binding.rbValoracion.setRating(poi.getPuntuacion().floatValue());
+                }
 
             }else{
                 Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_LONG).show();
