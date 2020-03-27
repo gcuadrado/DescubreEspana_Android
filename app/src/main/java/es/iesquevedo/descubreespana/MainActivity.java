@@ -1,9 +1,8 @@
 package es.iesquevedo.descubreespana;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,8 +12,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import es.iesquevedo.descubreespana.databinding.ActivityMainBinding;
 import es.iesquevedo.descubreespana.ui.useraccount.UserAccountViewModel;
+import es.iesquevedo.descubreespana.utils.Constantes;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                             navController.navigate(R.id.navigation_dashboard);
                             break;
                         case R.id.navigation_login:
-                            if (userAccountViewModel.getmUsuario().getValue() == null) {
+                            if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(Constantes.USUARIO,null) == null) {
                                     navController.navigate(R.id.navigation_login);
                             } else {
                                     navController.navigate(R.id.userAccountFragment);

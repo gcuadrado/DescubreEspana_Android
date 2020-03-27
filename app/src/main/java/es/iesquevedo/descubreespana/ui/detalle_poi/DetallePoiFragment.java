@@ -1,20 +1,18 @@
 package es.iesquevedo.descubreespana.ui.detalle_poi;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.DetallePoiFragmentBinding;
@@ -52,7 +50,12 @@ public class DetallePoiFragment extends Fragment {
         serviciosPuntoInteres=new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
 
-
+        binding.btValoraciones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(DetallePoiFragmentDirections.actionDetallePoiToValoracionFragment(poiMaestro.getIdPuntoInteres()));
+            }
+        });
 
 
        new GetPoiDetalle().execute(poiMaestro.getIdPuntoInteres());

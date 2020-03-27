@@ -7,6 +7,7 @@ import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
+import es.iesquevedo.descubreespana.modelo.dto.ValoracionDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -32,4 +33,10 @@ public interface ServerDataApi {
 
    @GET("api/puntos/{id}")
     Call<PuntoInteresDtoGetDetalle> getPoi(@Path("id") int id);
+
+    @GET("api/valoraciones")
+    Call<List<ValoracionDto>> getAllValoraciones();
+
+    @POST("api/valoraciones")
+    Call<ValoracionDto> addValoracion(@Body ValoracionDto valoracionDto);
 }

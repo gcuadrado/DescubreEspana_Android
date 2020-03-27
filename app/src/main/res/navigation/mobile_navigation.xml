@@ -51,5 +51,17 @@
         <argument
             android:name="puntoInteres"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro" />
+        <action
+            android:id="@+id/action_detallePoi_to_valoracionFragment"
+            app:destination="@id/valoracionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/valoracionFragment"
+        android:name="es.iesquevedo.descubreespana.ui.valoracion.ValoracionFragment"
+        android:label="valoracion_fragment"
+        tools:layout="@layout/valoracion_fragment" >
+        <argument
+            android:name="idPoi"
+            app:argType="integer" />
     </fragment>
 </navigation>
