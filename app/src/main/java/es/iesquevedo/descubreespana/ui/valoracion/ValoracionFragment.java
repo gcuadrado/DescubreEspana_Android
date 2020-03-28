@@ -78,7 +78,7 @@ public class ValoracionFragment extends Fragment {
 
         @Override
         protected Either<ApiError, List<ValoracionDto>> doInBackground(Void... voids) {
-            return serviciosValoraciones.getAll();
+            return serviciosValoraciones.getAll(idPoi);
         }
 
         @Override

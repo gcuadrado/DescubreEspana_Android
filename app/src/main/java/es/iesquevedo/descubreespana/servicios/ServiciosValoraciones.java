@@ -14,8 +14,8 @@ public class ServiciosValoraciones {
         this.valoracionDao=new ValoracionDao();
     }
 
-    public Either<ApiError, List<ValoracionDto>> getAll() {
-        return valoracionDao.getAll();
+    public Either<ApiError, List<ValoracionDto>> getAll(int id) {
+        return valoracionDao.getAll(id);
     }
 
     public Either<ApiError, ValoracionDto> addValoracion(int puntuacion, String comentario, int idPuntoInteres)  {

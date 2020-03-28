@@ -25,11 +25,11 @@ public class ValoracionDao {
         this.gson=ConfigOkHttpRetrofit.getInstance().getGson();
     }
 
-    public Either<ApiError, List<ValoracionDto>> getAll()  {
+    public Either<ApiError, List<ValoracionDto>> getAll(int id)  {
         Either<ApiError,List<ValoracionDto>> result;
         ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
-        Call<List<ValoracionDto>> call = serverDataApi.getAllValoraciones();
         try {
+            Call<List<ValoracionDto>> call = serverDataApi.getAllValoraciones(id);
             Response<List<ValoracionDto>> response = call.execute();
             if (response.isSuccessful()) {
                 result = Either.right(response.body());

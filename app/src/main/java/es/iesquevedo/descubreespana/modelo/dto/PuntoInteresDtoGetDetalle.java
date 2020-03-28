@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -33,6 +32,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     private String enlaceInfo;
     private String contacto;
     private List<FotoPuntoInteresDtoGet> fotoPuntoInteresByIdPuntoInteres;
+    private List<ValoracionDto> valoraciones;
     private UsuarioDtoGet usuarioByIdUsuario;
 
 
@@ -55,9 +55,12 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
         contacto = in.readString();
         if (in.readByte() == 0x01) {
             fotoPuntoInteresByIdPuntoInteres = new ArrayList<FotoPuntoInteresDtoGet>();
+            valoraciones=new ArrayList<ValoracionDto>();
             in.readList(fotoPuntoInteresByIdPuntoInteres, FotoPuntoInteresDtoGet.class.getClassLoader());
+            in.readList(valoraciones,ValoracionDto.class.getClassLoader());
         } else {
             fotoPuntoInteresByIdPuntoInteres = null;
+            valoraciones=null;
         }
         usuarioByIdUsuario = (UsuarioDtoGet) in.readValue(UsuarioDtoGet.class.getClassLoader());
     }
@@ -113,6 +116,12 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
         } else {
             dest.writeByte((byte) (0x01));
             dest.writeList(fotoPuntoInteresByIdPuntoInteres);
+        }
+        if (valoraciones == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(valoraciones);
         }
         dest.writeValue(usuarioByIdUsuario);
     }

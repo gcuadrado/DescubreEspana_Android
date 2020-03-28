@@ -21,6 +21,7 @@ import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
 import es.iesquevedo.descubreespana.utils.VPGaleriaAdapter;
+import es.iesquevedo.descubreespana.utils.ValoracionAdapter;
 import io.vavr.control.Either;
 
 public class DetallePoiFragment extends Fragment {
@@ -109,6 +110,8 @@ public class DetallePoiFragment extends Fragment {
                     binding.detallesPuntuacion.setText(poi.getPuntuacion().toString());
                     binding.rbValoracion.setRating(poi.getPuntuacion().floatValue());
                 }
+
+                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones()));
 
             } else {
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();

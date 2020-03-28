@@ -50,9 +50,6 @@
             android:orientation="vertical"
             android:layout_margin="15dp">
 
-
-
-
                 <TextView
                     android:id="@+id/textviewinfobasica"
                     android:layout_width="match_parent"
@@ -131,12 +128,18 @@
                             android:text="Ver valoraciones">
                         </Button>
 
+
                     </LinearLayout>
 
 
             </LinearLayout>
 
-
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerValoraciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+            </androidx.recyclerview.widget.RecyclerView>
 
 
             <!-- LINEAL TEXTO -->

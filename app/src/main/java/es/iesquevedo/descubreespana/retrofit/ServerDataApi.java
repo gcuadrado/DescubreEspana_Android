@@ -35,7 +35,7 @@ public interface ServerDataApi {
     Call<PuntoInteresDtoGetDetalle> getPoi(@Path("id") int id);
 
     @GET("api/valoraciones")
-    Call<List<ValoracionDto>> getAllValoraciones();
+    Call<List<ValoracionDto>> getAllValoraciones(@Query("poi_id") int id);
 
     @POST("api/valoraciones")
     Call<ValoracionDto> addValoracion(@Body ValoracionDto valoracionDto);
