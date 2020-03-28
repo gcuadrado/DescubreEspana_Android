@@ -52,10 +52,7 @@
 
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/textviewinfobasica"
                     android:layout_width="match_parent"
@@ -67,24 +64,20 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:lineSpacingExtra="10dp"
+                    android:lineSpacingExtra="8dp"
+                    android:ellipsize="end"
+                    android:justificationMode="inter_word"
+                    android:maxLines="4"
                     android:id="@+id/detalles_infobasica"
                     android:padding="2dp"/>
 
-
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
 
                     <Button
                         android:id="@+id/mostrarMasInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Más información"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/boton_mas_info"
                         android:padding="1dp"
                         android:textColor="#fff"
                         android:textSize="14sp"
@@ -93,7 +86,53 @@
                         android:background="@color/colorPrimaryDark"/>
 
 
-                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/linearpuntuacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/textviewpuntuacion"
+                        android:textStyle="bold"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="match_parent"
+                        android:text="@string/tv_puntuacion"
+                        android:padding="3dp"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="5"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <RatingBar
+                            android:id="@+id/rbValoracion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:scaleX="0.6"
+                            android:scaleY="0.6"
+                            android:stepSize="0.01"
+                            android:padding="0dp"
+                            />
+                        <TextView
+                            android:id="@+id/detalles_puntuacion"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="@string/poi_sin_puntuacion"
+                            android:padding="3dp"/>
+
+                        <Button
+                            android:id="@+id/btValoraciones"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ver valoraciones">
+                        </Button>
+
+                    </LinearLayout>
+
 
             </LinearLayout>
 
@@ -185,11 +224,12 @@
                         android:layout_height="match_parent"
                         android:text="@string/tv_accesibilidad"
                         android:padding="3dp"/>
-                    <TextView
+                    <CheckBox
                         android:id="@+id/detalles_accesibilidad"
                         android:layout_width="0dp"
                         android:layout_weight="6"
                         android:layout_height="wrap_content"
+                        android:clickable="false"
                         android:padding="3dp"/>
 
                 </LinearLayout>
@@ -235,54 +275,7 @@
                         android:padding="3dp" />
 
                 </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/linearpuntuacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/textviewpuntuacion"
-                        android:textStyle="bold"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:layout_height="match_parent"
-                        android:text="@string/tv_puntuacion"
-                        android:padding="3dp"/>
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="5"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical">
-                    <RatingBar
-                        android:id="@+id/rbValoracion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:isIndicator="true"
-                        android:numStars="5"
-                        android:scaleX="0.6"
-                        android:scaleY="0.6"
-                        android:stepSize="0.01"
-                        android:padding="0dp"
-                        />
-                        <TextView
-                            android:id="@+id/detalles_puntuacion"
-                            android:textStyle="bold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="@string/poi_sin_puntuacion"
-                            android:padding="3dp"/>
 
-                        <Button
-                            android:id="@+id/btValoraciones"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ver valoraciones">
-                        </Button>
-
-                    </LinearLayout>
-
-                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/linearhorario"
                     android:layout_width="match_parent"

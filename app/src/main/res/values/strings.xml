@@ -20,4 +20,6 @@
     <string name="tv_coste">Coste:</string>
     <string name="poi_sin_puntuacion">Aún no hay ninguna puntuación</string>
     <string name="boton_enviar_valoracion">Enviar valoración</string>
+    <string name="boton_mas_info">Más información</string>
+    <string name="boton_menos_info">Minimizar información</string>
 </resources>

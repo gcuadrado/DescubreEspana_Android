@@ -30,6 +30,7 @@ public class DetallePoiFragment extends Fragment {
     private PuntoInteresDtoGetMaestro poiMaestro;
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private NavController navController;
+    private boolean mostrarInfoPulsado;
 
     public static DetallePoiFragment newInstance() {
         return new DetallePoiFragment();
@@ -38,7 +39,7 @@ public class DetallePoiFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding=DetallePoiFragmentBinding.inflate(inflater,container,false);
+        binding = DetallePoiFragmentBinding.inflate(inflater, container, false);
         detallePoiViewModel = new ViewModelProvider(this).get(DetallePoiViewModel.class);
         return binding.getRoot();
     }
@@ -46,10 +47,19 @@ public class DetallePoiFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        poiMaestro=DetallePoiFragmentArgs.fromBundle(getArguments()).getPuntoInteres();
-        serviciosPuntoInteres=new ServiciosPuntoInteres();
+        poiMaestro = DetallePoiFragmentArgs.fromBundle(getArguments()).getPuntoInteres();
+        serviciosPuntoInteres = new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
 
+
+        setListeners();
+
+
+        new GetPoiDetalle().execute(poiMaestro.getIdPuntoInteres());
+    }
+
+    private void setListeners() {
+        mostrarInfoPulsado = false;
         binding.btValoraciones.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,40 +67,51 @@ public class DetallePoiFragment extends Fragment {
             }
         });
 
-
-       new GetPoiDetalle().execute(poiMaestro.getIdPuntoInteres());
+        binding.mostrarMasInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mostrarInfoPulsado) {
+                    mostrarInfoPulsado = true;
+                    binding.mostrarMasInfo.setText(R.string.boton_menos_info);
+                    binding.detallesInfobasica.setMaxLines(Integer.MAX_VALUE);
+                } else {
+                    mostrarInfoPulsado = false;
+                    binding.mostrarMasInfo.setText(R.string.boton_mas_info);
+                    binding.detallesInfobasica.setMaxLines(4);
+                }
+            }
+        });
     }
 
 
-
-    private class GetPoiDetalle extends AsyncTask<Integer,Void, Either<ApiError,PuntoInteresDtoGetDetalle>>{
+    private class GetPoiDetalle extends AsyncTask<Integer, Void, Either<ApiError, PuntoInteresDtoGetDetalle>> {
 
         @Override
-        protected Either<ApiError,PuntoInteresDtoGetDetalle> doInBackground(Integer... integers) {
+        protected Either<ApiError, PuntoInteresDtoGetDetalle> doInBackground(Integer... integers) {
             return serviciosPuntoInteres.get(integers[0]);
         }
 
         @Override
-        protected void onPostExecute(Either<ApiError,PuntoInteresDtoGetDetalle> result) {
-            if(result.isRight()) {
-                PuntoInteresDtoGetDetalle poi=result.get();
+        protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
+            if (result.isRight()) {
+                PuntoInteresDtoGetDetalle poi = result.get();
 
                 binding.detallesInfobasica.setText(poi.getInfoDetallada());
                 binding.detallesFecha.setText(poi.getFechaInicio());
                 binding.detallesCategoria.setText(poi.getCategoria());
                 binding.detallesDireccion.setText(poi.getDireccion());
-                binding.detallesAccesibilidad.setText(poi.getAccesibilidad().toString());
+                binding.detallesAccesibilidad.setChecked(poi.getAccesibilidad());
                 binding.detallesHorario.setText(poi.getHorario());
                 binding.detallesCoste.setText(poi.getCoste().toString());
                 binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poi));
                 binding.indicator.setViewPager(binding.viewPagerGaleria);
-                if(poi.getPuntuacion()!=null) {
+                if (poi.getPuntuacion() != null) {
                     binding.detallesPuntuacion.setText(poi.getPuntuacion().toString());
                     binding.rbValoracion.setRating(poi.getPuntuacion().floatValue());
                 }
 
-            }else{
-                Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
                 navController.navigate(R.id.navigation_home);
             }
         }
