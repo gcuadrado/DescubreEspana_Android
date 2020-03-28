@@ -10,6 +10,7 @@ import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
 import es.iesquevedo.descubreespana.modelo.dto.ValoracionDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -39,4 +40,7 @@ public interface ServerDataApi {
 
     @POST("api/valoraciones")
     Call<ValoracionDto> addValoracion(@Body ValoracionDto valoracionDto);
+
+    @DELETE("api/valoraciones")
+    Call<String> borrarValoracion(@Query("id") int id);
 }

@@ -59,4 +59,21 @@ public class ValoracionDao {
         }
         return result;
     }
+
+    public Either<ApiError, String> borrarValoracion(int id)  {
+        Either<ApiError,String> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<String> call = serverDataApi.borrarValoracion(id);
+        try {
+            Response<String> response = call.execute();
+            if (response.isSuccessful()) {
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
+            }
+        }catch (Exception e){
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
+        }
+        return result;
+    }
 }

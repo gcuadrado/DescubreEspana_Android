@@ -36,4 +36,8 @@ public class ServiciosValoraciones {
 
         return result;
     }
+
+    public Either<ApiError,String> borrarValoracion(int id){
+        return valoracionDao.borrarValoracion(id);
+    }
 }

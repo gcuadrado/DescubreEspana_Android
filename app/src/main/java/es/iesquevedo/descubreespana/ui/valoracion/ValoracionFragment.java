@@ -85,7 +85,7 @@ public class ValoracionFragment extends Fragment {
         protected void onPostExecute(Either<ApiError, List<ValoracionDto>> result) {
             if(result.isRight()){
                 binding.recyclerValoraciones.setLayoutManager(new LinearLayoutManager(requireContext()));
-                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(result.get()));
+                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(result.get(),requireContext()));
             }else{
                 Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_LONG).show();
             }

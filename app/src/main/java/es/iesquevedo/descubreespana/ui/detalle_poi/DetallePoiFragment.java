@@ -2,6 +2,7 @@ package es.iesquevedo.descubreespana.ui.detalle_poi;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,7 +112,14 @@ public class DetallePoiFragment extends Fragment {
                     binding.rbValoracion.setRating(poi.getPuntuacion().floatValue());
                 }
 
-                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones()));
+                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones(),requireContext()));
+
+                //En caso de que haya más de una valoración, fijamos la altura del RecyclerView a 250dp, si solo hay una lo dejamos en wrap_content
+                if(poi.getValoraciones().size()>1){
+                    binding.recyclerValoraciones.getLayoutParams().height=(int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, requireContext().getResources().getDisplayMetrics());
+                }else{
+                    binding.recyclerValoraciones.getLayoutParams().height=ViewGroup.LayoutParams.WRAP_CONTENT;
+                }
 
             } else {
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
