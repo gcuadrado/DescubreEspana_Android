@@ -1,7 +1,6 @@
 package es.iesquevedo.descubreespana.ui.nuevopunto;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,11 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.esafirm.imagepicker.features.ImagePicker;
@@ -23,6 +22,7 @@ import com.esafirm.imagepicker.model.Image;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.databinding.NuevoPuntoFragmentBinding;
+import es.iesquevedo.descubreespana.utils.FotosAdapter;
 
 public class NuevoPuntoFragment extends Fragment {
 
@@ -36,7 +36,7 @@ public class NuevoPuntoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding=NuevoPuntoFragmentBinding.inflate(inflater,container,false);
+        binding = NuevoPuntoFragmentBinding.inflate(inflater, container, false);
         nuevoPuntoViewModel = new ViewModelProvider(requireActivity()).get(NuevoPuntoViewModel.class);
         return binding.getRoot();
     }
@@ -59,8 +59,8 @@ public class NuevoPuntoFragment extends Fragment {
                             .showCamera(true) // show camera or not (true by default)
                             .imageDirectory("Camera") // directory name for captured image  ("Camera" folder by default)
                             .start();
-                }catch (Exception e){
-                    Log.d("descubreespana",null,e);
+                } catch (Exception e) {
+                    Log.d("descubreespana", null, e);
                 }
             }
         });
@@ -72,11 +72,19 @@ public class NuevoPuntoFragment extends Fragment {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // Get a list of picked images
             List<Image> images = ImagePicker.getImages(data);
-            for(Image image: images){
-                Bitmap myBitmap = BitmapFactory.decodeFile(image.getPath());
-                ImageView imageView=new ImageView(requireContext());
-                imageView.setImageBitmap(myBitmap);
-                binding.linearLayout.addView(imageView,0,new ViewGroup.LayoutParams(25,25));
+            if (!images.isEmpty()) {
+                binding.recyclerImagenes.setAdapter(new FotosAdapter(images,nuevoPuntoViewModel));
+
+                nuevoPuntoViewModel.getmImagenPrincipal().observe(getViewLifecycleOwner(), new Observer<Image>() {
+                    @Override
+                    public void onChanged(@Nullable Image image) {
+                        binding.imageViewPrincipal.setImageBitmap(BitmapFactory.decodeFile(image.getPath()));
+                        binding.imageViewPrincipal.setTag(image);
+                    }
+                });
+                binding.tvImagenPrincipal.setVisibility(View.VISIBLE);
+                binding.imageViewPrincipal.setVisibility(View.VISIBLE);
+
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
