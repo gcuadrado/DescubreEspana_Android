@@ -2,7 +2,6 @@ package es.iesquevedo.descubreespana.ui.login;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +17,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import es.iesquevedo.descubreespana.R;
-import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.databinding.FragmentLoginBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.servicios.ServiciosUsuario;
 import es.iesquevedo.descubreespana.ui.useraccount.UserAccountViewModel;
-import es.iesquevedo.descubreespana.utils.Constantes;
+import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 import io.vavr.control.Either;
 
 public class LoginFragment extends Fragment {
@@ -100,10 +98,13 @@ public class LoginFragment extends Fragment {
         protected void onPostExecute(Either<ApiError, UsuarioDtoGet> result) {
             if(result.isRight()){
                 UsuarioDtoGet usuarioDtoGet=result.get();
-               // userAccountViewModel.getmUsuario().setValue(usuarioDtoGet);
-                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putString(Constantes.USUARIO, ConfigOkHttpRetrofit.getInstance().getGson().toJson(usuarioDtoGet)).commit();
+               //Guardamos el usuario actual en Preferences
+                GetSharedPreferences.getInstance().setCurrentUser(usuarioDtoGet,requireContext());
                 Toast.makeText(requireContext(),usuarioDtoGet.getIdUsuario()+":"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
-                navController.navigate(R.id.userAccountFragment);
+
+               if(!navController.popBackStack()) {
+                   navController.navigate(R.id.userAccountFragment);
+               }
             }else{
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
             }

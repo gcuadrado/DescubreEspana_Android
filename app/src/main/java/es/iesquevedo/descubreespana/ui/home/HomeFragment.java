@@ -17,13 +17,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,11 +34,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.databinding.FragmentHomeBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
-import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
-import es.iesquevedo.descubreespana.ui.useraccount.UserAccountFragmentDirections;
+import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 import io.vavr.control.Either;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
@@ -52,13 +50,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private FusedLocationProviderClient fusedLocationClient;
     private NavController navController;
+    private FragmentHomeBinding binding;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        binding=FragmentHomeBinding.inflate(inflater,container,false);
+
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         if (mMapFragment == null) {
@@ -71,7 +71,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         mMapFragment.getMapAsync(this);
         serviciosPuntoInteres = new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        return root;
+        binding.floatingAddPunto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(GetSharedPreferences.getInstance().getCurrentUser(requireContext())!=null){
+                    navController.navigate(R.id.nuevoPuntoFragment);
+                }else{
+                    navController.navigate(R.id.navigation_login);
+                }
+            }
+        });
+        return binding.getRoot();
     }
 
     @Override

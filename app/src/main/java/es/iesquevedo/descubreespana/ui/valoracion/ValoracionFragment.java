@@ -11,14 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.List;
 
+import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.ValoracionFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.ValoracionDto;
 import es.iesquevedo.descubreespana.servicios.ServiciosValoraciones;
+import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 import es.iesquevedo.descubreespana.utils.ValoracionAdapter;
 import io.vavr.control.Either;
 
@@ -28,6 +32,7 @@ public class ValoracionFragment extends Fragment {
     private ValoracionFragmentBinding binding;
     private ServiciosValoraciones serviciosValoraciones;
     private int idPoi;
+    private NavController navController;
 
     public static ValoracionFragment newInstance() {
         return new ValoracionFragment();
@@ -46,12 +51,16 @@ public class ValoracionFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         serviciosValoraciones=new ServiciosValoraciones();
         idPoi=ValoracionFragmentArgs.fromBundle(getArguments()).getIdPoi();
-
+        navController = Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
         new GetValoraciones().execute();
         binding.btValorar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AddValoracion().execute();
+                if(GetSharedPreferences.getInstance().getCurrentUser(requireContext())!=null) {
+                    new AddValoracion().execute();
+                }else{
+                    navController.navigate(R.id.navigation_login);
+                }
             }
         });
     }

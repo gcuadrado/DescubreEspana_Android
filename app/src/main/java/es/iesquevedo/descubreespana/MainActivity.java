@@ -1,12 +1,10 @@
 package es.iesquevedo.descubreespana;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -15,11 +13,11 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import es.iesquevedo.descubreespana.databinding.ActivityMainBinding;
-import es.iesquevedo.descubreespana.ui.useraccount.UserAccountViewModel;
-import es.iesquevedo.descubreespana.utils.Constantes;
+import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +32,12 @@ public class MainActivity extends AppCompatActivity {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_login, R.id.userAccountFragment)
                 .build();
         //Se obtiene el navcontroller pasando la activity y el contenedos de los fragments
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //Se vincula la actionbar de la activity al navcontroller
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        UserAccountViewModel userAccountViewModel = new ViewModelProvider(this).get(UserAccountViewModel.class);
-
+        //Se borra al inicio para que no haya ningún usuario loggeado
+        GetSharedPreferences.getInstance().clearCurrentUser(this);
 
         navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                             navController.navigate(R.id.navigation_dashboard);
                             break;
                         case R.id.navigation_login:
-                            if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(Constantes.USUARIO,null) == null) {
+                            if (GetSharedPreferences.getInstance().getCurrentUser(getApplicationContext()) == null) {
                                     navController.navigate(R.id.navigation_login);
                             } else {
                                     navController.navigate(R.id.userAccountFragment);
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()
+        return navController.popBackStack()
                 || super.onSupportNavigateUp();
     }
 }

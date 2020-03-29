@@ -15,6 +15,12 @@
             app:destination="@id/detallePoi"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_navigation_home_self"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_home_to_nuevoPuntoFragment"
+            app:destination="@id/nuevoPuntoFragment" />
     </fragment>
 
     <fragment
@@ -46,22 +52,31 @@
     <fragment
         android:id="@+id/detallePoi"
         android:name="es.iesquevedo.descubreespana.ui.detalle_poi.DetallePoiFragment"
-        android:label="detalle_poi_fragment"
-        tools:layout="@layout/detalle_poi_fragment" >
+        android:label="Punto de Interés"
+        tools:layout="@layout/detalle_poi_fragment">
         <argument
             android:name="puntoInteres"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro" />
         <action
             android:id="@+id/action_detallePoi_to_valoracionFragment"
-            app:destination="@id/valoracionFragment" />
+            app:destination="@id/valoracionFragment"
+            app:enterAnim="@anim/fragment_fade_enter" />
     </fragment>
     <fragment
         android:id="@+id/valoracionFragment"
         android:name="es.iesquevedo.descubreespana.ui.valoracion.ValoracionFragment"
-        android:label="valoracion_fragment"
-        tools:layout="@layout/valoracion_fragment" >
+        android:label="Valoración"
+        tools:layout="@layout/valoracion_fragment">
         <argument
             android:name="idPoi"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_valoracionFragment_to_navigation_login"
+            app:destination="@id/navigation_login" />
     </fragment>
+    <fragment
+        android:id="@+id/nuevoPuntoFragment"
+        android:name="es.iesquevedo.descubreespana.ui.nuevopunto.NuevoPuntoFragment"
+        android:label="nuevo_punto_fragment"
+        tools:layout="@layout/nuevo_punto_fragment" />
 </navigation>
