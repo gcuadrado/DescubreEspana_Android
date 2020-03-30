@@ -1,6 +1,8 @@
 package es.iesquevedo.descubreespana.ui.home;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -30,16 +33,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.schibstedspain.leku.LocationPickerActivity;
 
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.FragmentHomeBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
 import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 import io.vavr.control.Either;
+
+import static com.schibstedspain.leku.LocationPickerActivityKt.LATITUDE;
+import static com.schibstedspain.leku.LocationPickerActivityKt.LOCATION_ADDRESS;
+import static com.schibstedspain.leku.LocationPickerActivityKt.LONGITUDE;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
@@ -77,7 +86,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 if(GetSharedPreferences.getInstance().getCurrentUser(requireContext())!=null){
                     navController.navigate(R.id.nuevoPuntoFragment);
                 }else{
-                    navController.navigate(R.id.navigation_login);
+                    //navController.navigate(R.id.navigation_login);
+
+                   Intent locationPickerIntent = new LocationPickerActivity.Builder()
+                            .withGeolocApiKey(requireActivity().getString(R.string.google_maps_key))
+                            .withSearchZone("es_ES")
+                            .withZipCodeHidden()
+                            .withSatelliteViewHidden()
+                            .withGooglePlacesEnabled()
+                            .withGoogleTimeZoneEnabled()
+                            .withUnnamedRoadHidden()
+                            .build(requireContext());
+
+                    startActivityForResult(locationPickerIntent, 1);
                 }
             }
         });
@@ -170,6 +191,26 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (mMap != null) {
             homeViewModel.getCameraPosition().setValue(mMap.getCameraPosition());
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode==1 && resultCode == Activity.RESULT_OK && data != null) {
+            if (requestCode == 1) {
+                Double latitude = data.getDoubleExtra(LATITUDE, 0.0);
+                Double longitude = data.getDoubleExtra(LONGITUDE, 0.0);
+                String address = data.getStringExtra(LOCATION_ADDRESS);
+
+                PuntoInteresDtoGetDetalle puntoInteresDtoGetDetalle=PuntoInteresDtoGetDetalle.builder()
+                        .latitud(latitude)
+                        .longitud(longitude)
+                        .direccion(address)
+                        .build();
+                navController.navigate(HomeFragmentDirections.actionNavigationHomeToNuevoPuntoFragment(puntoInteresDtoGetDetalle));
+
+            }
+        }
+
     }
 }
 

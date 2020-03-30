@@ -78,5 +78,9 @@
         android:id="@+id/nuevoPuntoFragment"
         android:name="es.iesquevedo.descubreespana.ui.nuevopunto.NuevoPuntoFragment"
         android:label="nuevo_punto_fragment"
-        tools:layout="@layout/nuevo_punto_fragment" />
+        tools:layout="@layout/nuevo_punto_fragment" >
+        <argument
+            android:name="nuevoPunto"
+            app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
+    </fragment>
 </navigation>

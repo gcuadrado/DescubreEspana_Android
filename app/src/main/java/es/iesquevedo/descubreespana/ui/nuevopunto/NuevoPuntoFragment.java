@@ -22,12 +22,14 @@ import com.esafirm.imagepicker.model.Image;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.databinding.NuevoPuntoFragmentBinding;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.utils.FotosAdapter;
 
 public class NuevoPuntoFragment extends Fragment {
 
     private NuevoPuntoViewModel nuevoPuntoViewModel;
     private NuevoPuntoFragmentBinding binding;
+    private PuntoInteresDtoGetDetalle nuevoPuntoInteres;
 
     public static NuevoPuntoFragment newInstance() {
         return new NuevoPuntoFragment();
@@ -44,6 +46,9 @@ public class NuevoPuntoFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        nuevoPuntoInteres=NuevoPuntoFragmentArgs.fromBundle(getArguments()).getNuevoPunto();
+        binding.etDireccion.setText(nuevoPuntoInteres.getDireccion());
+
         binding.btnImagePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
