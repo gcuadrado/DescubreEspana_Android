@@ -32,15 +32,27 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerImagenes"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="3"/>
+            app:spanCount="3" />
 
         <Button
             android:id="@+id/btnImagePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Imagenes" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre:" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
 
         <TextView
             android:id="@+id/textView"
@@ -104,7 +116,8 @@
         <Spinner
             android:id="@+id/spinnerCategoria"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:entries="@array/categorias"/>
 
         <TextView
             android:id="@+id/textView6"
@@ -156,5 +169,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="CheckBox" />
+
+        <Button
+            android:id="@+id/btEnviarPunto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar" />
     </LinearLayout>
 </ScrollView>

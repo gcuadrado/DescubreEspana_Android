@@ -8,11 +8,14 @@ import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
 import es.iesquevedo.descubreespana.modelo.dto.ValoracionDto;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -20,19 +23,25 @@ public interface ServerDataApi {
    /* @POST("login")
     Call<LoginResponse> login(@Body DigiRequestBody digiRequestBody);*/
 
-   @GET("api/puntos")
+    @GET("api/puntos")
     Call<List<PuntoInteresDtoGetMaestro>> getAllPois();
 
-   @POST("api/usuario/registro")
+    @Multipart
+    @POST("api/puntos")
+    Call<PuntoInteresDtoGetDetalle> addPunto(
+            @Part List<MultipartBody.Part> files,
+            @Part MultipartBody.Part data);
+
+    @POST("api/usuario/registro")
     Call<UserKeystore> registrar(@Body UsuarioDtoPost usuarioDtoPost);
 
-   @POST("api/usuario/login")
+    @POST("api/usuario/login")
     Call<UsuarioDtoGet> login(@Body UsuarioDtoPost usuario);
 
-   @GET("reestablecer")
+    @GET("reestablecer")
     Call<String> reestablecerPassword(@Query("email") String email);
 
-   @GET("api/puntos/{id}")
+    @GET("api/puntos/{id}")
     Call<PuntoInteresDtoGetDetalle> getPoi(@Path("id") int id);
 
     @GET("api/valoraciones")

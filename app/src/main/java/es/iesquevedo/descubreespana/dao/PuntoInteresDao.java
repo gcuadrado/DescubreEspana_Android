@@ -9,12 +9,11 @@ import java.util.List;
 
 import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.modelo.ApiError;
-import es.iesquevedo.descubreespana.modelo.UserKeystore;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
-import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoPost;
 import es.iesquevedo.descubreespana.retrofit.ServerDataApi;
 import io.vavr.control.Either;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -51,6 +50,24 @@ public class PuntoInteresDao {
         Either<ApiError,PuntoInteresDtoGetDetalle> result;
         ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
         Call<PuntoInteresDtoGetDetalle> call = serverDataApi.getPoi(id);
+        try {
+            Response<PuntoInteresDtoGetDetalle> response = call.execute();
+            if (response.isSuccessful()) {
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
+            }
+        }catch (Exception e){
+            Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
+        }
+        return result;
+    }
+
+    public Either<ApiError,PuntoInteresDtoGetDetalle> addPoi(MultipartBody.Part partPuntoInteres, List<MultipartBody.Part> multipartFromImages) {
+        Either<ApiError,PuntoInteresDtoGetDetalle> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<PuntoInteresDtoGetDetalle> call = serverDataApi.addPunto(multipartFromImages,partPuntoInteres);
         try {
             Response<PuntoInteresDtoGetDetalle> response = call.execute();
             if (response.isSuccessful()) {

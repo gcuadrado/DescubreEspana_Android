@@ -3,6 +3,7 @@ package es.iesquevedo.descubreespana.ui.nuevopunto;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,14 +23,19 @@ import com.esafirm.imagepicker.model.Image;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.databinding.NuevoPuntoFragmentBinding;
+import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
+import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
 import es.iesquevedo.descubreespana.utils.FotosAdapter;
+import io.vavr.control.Either;
 
 public class NuevoPuntoFragment extends Fragment {
 
     private NuevoPuntoViewModel nuevoPuntoViewModel;
     private NuevoPuntoFragmentBinding binding;
     private PuntoInteresDtoGetDetalle nuevoPuntoInteres;
+    private List<Image> images;
+    private ServiciosPuntoInteres serviciosPuntoInteres;
 
     public static NuevoPuntoFragment newInstance() {
         return new NuevoPuntoFragment();
@@ -48,7 +54,7 @@ public class NuevoPuntoFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         nuevoPuntoInteres=NuevoPuntoFragmentArgs.fromBundle(getArguments()).getNuevoPunto();
         binding.etDireccion.setText(nuevoPuntoInteres.getDireccion());
-
+        serviciosPuntoInteres=new ServiciosPuntoInteres();
         binding.btnImagePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,17 +62,33 @@ public class NuevoPuntoFragment extends Fragment {
                     ImagePicker.create(NuevoPuntoFragment.this)
                             .returnMode(ReturnMode.NONE) // set whether pick and / or camera action should return immediate result or not.
                             .folderMode(true) // folder mode (false by default)
-                            .toolbarFolderTitle("Folder") // folder selection title
-                            .toolbarImageTitle("Tap to select") // image selection title
+                            .toolbarFolderTitle("Directorios") // folder selection title
+                            .toolbarImageTitle("Toca para seleccionar") // image selection title
                             .toolbarArrowColor(Color.BLACK) // Toolbar 'up' arrow color
                             .multi() // multi mode (default mode)
                             .limit(5) // max images can be selected (99 by default)
                             .showCamera(true) // show camera or not (true by default)
-                            .imageDirectory("Camera") // directory name for captured image  ("Camera" folder by default)
+                            .imageDirectory("Cámara") // directory name for captured image  ("Camera" folder by default)
                             .start();
                 } catch (Exception e) {
                     Log.d("descubreespana", null, e);
                 }
+            }
+        });
+
+        binding.btEnviarPunto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nuevoPuntoInteres.setNombre(binding.etNombre.getText().toString());
+                nuevoPuntoInteres.setFechaInicio(binding.etFecha.getText().toString());
+                nuevoPuntoInteres.setCategoria(binding.spinnerCategoria.getSelectedItem().toString());
+                nuevoPuntoInteres.setDireccion(binding.etDireccion.getText().toString());
+                nuevoPuntoInteres.setContacto(binding.etContacto.getText().toString());
+                nuevoPuntoInteres.setCoste(Double.parseDouble(binding.etCoste.getText().toString()));
+                nuevoPuntoInteres.setEnlaceInfo(binding.etEnlace.getText().toString());
+                nuevoPuntoInteres.setAccesibilidad(binding.cbAccesibilidad.isChecked());
+
+                new AddPoi().execute();
             }
         });
 
@@ -76,7 +98,8 @@ public class NuevoPuntoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // Get a list of picked images
-            List<Image> images = ImagePicker.getImages(data);
+             images = ImagePicker.getImages(data);
+
             if (!images.isEmpty()) {
                 binding.recyclerImagenes.setAdapter(new FotosAdapter(images,nuevoPuntoViewModel));
 
@@ -93,5 +116,13 @@ public class NuevoPuntoFragment extends Fragment {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private class AddPoi extends AsyncTask<Void,Void, Either<ApiError,PuntoInteresDtoGetDetalle>>{
+
+        @Override
+        protected Either<ApiError, PuntoInteresDtoGetDetalle> doInBackground(Void... voids) {
+            return serviciosPuntoInteres.addPoi(nuevoPuntoInteres,images);
+        }
     }
 }

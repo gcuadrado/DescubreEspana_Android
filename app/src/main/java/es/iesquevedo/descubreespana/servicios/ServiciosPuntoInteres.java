@@ -1,12 +1,20 @@
 package es.iesquevedo.descubreespana.servicios;
 
+import com.esafirm.imagepicker.model.Image;
+
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
+import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.dao.PuntoInteresDao;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import io.vavr.control.Either;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class ServiciosPuntoInteres {
     private PuntoInteresDao puntoInteresDao;
@@ -21,5 +29,20 @@ public class ServiciosPuntoInteres {
 
     public Either<ApiError, PuntoInteresDtoGetDetalle> get(int id) {
         return puntoInteresDao.get(id);
+    }
+
+    public Either<ApiError, PuntoInteresDtoGetDetalle> addPoi(PuntoInteresDtoGetDetalle nuevoPuntoInteres, List<Image> images) {
+        MultipartBody.Part poiData = MultipartBody.Part.createFormData("data", ConfigOkHttpRetrofit.getInstance().getGson().toJson(nuevoPuntoInteres));
+       return puntoInteresDao.addPoi(poiData,getMultipartFromImages(images));
+    }
+
+    public List<MultipartBody.Part> getMultipartFromImages( List<Image> images){
+        List<MultipartBody.Part> multiparts=new ArrayList<>();
+        for(Image image: images){
+            File file=new File(image.getPath());
+            MultipartBody.Part multiPart=MultipartBody.Part.createFormData("image", file.getName(), RequestBody.create(file,MediaType.parse("image/*")));
+            multiparts.add(multiPart);
+        }
+        return multiparts;
     }
 }
