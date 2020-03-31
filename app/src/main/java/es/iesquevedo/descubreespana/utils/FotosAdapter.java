@@ -1,7 +1,6 @@
 package es.iesquevedo.descubreespana.utils;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.model.Image;
 
 import java.util.List;
@@ -21,6 +21,7 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
     private List<Image> images;
     private int selectedPosition=-1;
     private NuevoPuntoViewModel nuevoPuntoViewModel;
+    private Context mContext;
 
     public FotosAdapter(List<Image> images, NuevoPuntoViewModel nuevoPuntoViewModel) {
         this.images = images;
@@ -30,6 +31,7 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
     @NonNull
     @Override
     public FotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        mContext=parent.getContext();
         return new FotoViewHolder(LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.foto_row, parent, false));
@@ -37,8 +39,7 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
 
     @Override
     public void onBindViewHolder(@NonNull FotoViewHolder holder, int position) {
-        Bitmap myBitmap = BitmapFactory.decodeFile(images.get(position).getPath());
-        holder.imageViewFoto.setImageBitmap(myBitmap);
+        Glide.with(mContext).load(images.get(position).getPath()).into(holder.imageViewFoto);
         if(position==selectedPosition){
             holder.imageViewFoto.setBackgroundResource(R.drawable.highlight);
         }else{

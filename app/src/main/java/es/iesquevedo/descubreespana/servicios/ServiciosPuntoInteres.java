@@ -32,8 +32,9 @@ public class ServiciosPuntoInteres {
     }
 
     public Either<ApiError, PuntoInteresDtoGetDetalle> addPoi(PuntoInteresDtoGetDetalle nuevoPuntoInteres, List<Image> images) {
-        MultipartBody.Part poiData = MultipartBody.Part.createFormData("data", ConfigOkHttpRetrofit.getInstance().getGson().toJson(nuevoPuntoInteres));
-       return puntoInteresDao.addPoi(poiData,getMultipartFromImages(images));
+        String json = ConfigOkHttpRetrofit.getInstance().getGson().toJson(nuevoPuntoInteres);
+        MultipartBody.Part poiData = MultipartBody.Part.createFormData("data", json,RequestBody.create(json,MediaType.parse("application/json")));
+       return puntoInteresDao.addPoi(nuevoPuntoInteres,getMultipartFromImages(images));
     }
 
     public List<MultipartBody.Part> getMultipartFromImages( List<Image> images){

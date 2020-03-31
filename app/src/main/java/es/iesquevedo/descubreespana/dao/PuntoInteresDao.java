@@ -64,7 +64,7 @@ public class PuntoInteresDao {
         return result;
     }
 
-    public Either<ApiError,PuntoInteresDtoGetDetalle> addPoi(MultipartBody.Part partPuntoInteres, List<MultipartBody.Part> multipartFromImages) {
+    public Either<ApiError,PuntoInteresDtoGetDetalle> addPoi(PuntoInteresDtoGetDetalle partPuntoInteres, List<MultipartBody.Part> multipartFromImages) {
         Either<ApiError,PuntoInteresDtoGetDetalle> result;
         ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
         Call<PuntoInteresDtoGetDetalle> call = serverDataApi.addPunto(multipartFromImages,partPuntoInteres);

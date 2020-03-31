@@ -30,7 +30,7 @@ public interface ServerDataApi {
     @POST("api/puntos")
     Call<PuntoInteresDtoGetDetalle> addPunto(
             @Part List<MultipartBody.Part> files,
-            @Part MultipartBody.Part data);
+            @Part("data") PuntoInteresDtoGetDetalle data);
 
     @POST("api/usuario/registro")
     Call<UserKeystore> registrar(@Body UsuarioDtoPost usuarioDtoPost);

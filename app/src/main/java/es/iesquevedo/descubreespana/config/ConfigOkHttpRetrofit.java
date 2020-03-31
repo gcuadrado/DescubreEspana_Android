@@ -2,19 +2,16 @@ package es.iesquevedo.descubreespana.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
+
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 public class ConfigOkHttpRetrofit {
     private static ConfigOkHttpRetrofit instance = null;

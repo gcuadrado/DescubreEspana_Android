@@ -84,11 +84,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 if(GetSharedPreferences.getInstance().getCurrentUser(requireContext())!=null){
-                    navController.navigate(R.id.nuevoPuntoFragment);
-                }else{
-                    //navController.navigate(R.id.navigation_login);
-
-                   Intent locationPickerIntent = new LocationPickerActivity.Builder()
+                    Intent locationPickerIntent = new LocationPickerActivity.Builder()
                             .withGeolocApiKey(requireActivity().getString(R.string.google_maps_key))
                             .withSearchZone("es_ES")
                             .withZipCodeHidden()
@@ -99,6 +95,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                             .build(requireContext());
 
                     startActivityForResult(locationPickerIntent, 1);
+                }else{
+                    navController.navigate(R.id.navigation_login);
                 }
             }
         });
