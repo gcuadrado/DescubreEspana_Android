@@ -52,4 +52,7 @@ public interface ServerDataApi {
 
     @DELETE("api/valoraciones")
     Call<String> borrarValoracion(@Query("id") int id);
+
+    @GET("api/puntos/administrar")
+    Call<List<PuntoInteresDtoGetMaestro>> getAllPoisSinActivar();
 }

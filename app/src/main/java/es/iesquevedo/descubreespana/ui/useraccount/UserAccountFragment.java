@@ -19,6 +19,7 @@ import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.databinding.UserAccountFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.utils.Constantes;
+import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 
 public class UserAccountFragment extends Fragment {
 
@@ -46,6 +47,16 @@ public class UserAccountFragment extends Fragment {
         navController = Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
         usuarioDtoGet = ConfigOkHttpRetrofit.getInstance().getGson().fromJson(PreferenceManager.getDefaultSharedPreferences(requireContext()).getString(Constantes.USUARIO,null),UsuarioDtoGet.class);
         binding.tvUsername.setText(usuarioDtoGet.getEmail()+ usuarioDtoGet.getTipoUsuario());
+        UsuarioDtoGet currentUser = GetSharedPreferences.getInstance().getCurrentUser(requireContext());
+        binding.btAdministracion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(R.id.administracionFragment);
+            }
+        });
+        if(currentUser !=null && currentUser.getTipoUsuario()==Constantes.ADMIN){
+            binding.btAdministracion.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setListeners() {

@@ -1,28 +1,32 @@
 package es.iesquevedo.descubreespana.ui.registro;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Email;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
+import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.RegistroFragmentBinding;
@@ -37,6 +41,9 @@ public class RegistroFragment extends Fragment {
     private RegistroFragmentBinding binding;
     private ServiciosUsuario serviciosUsuario;
     private NavController navController;
+    private Validator validator;
+    @Email(message = "Debes indicar un email válido")
+    private EditText etEmail;
 
     public static RegistroFragment newInstance() {
         return new RegistroFragment();
@@ -46,35 +53,61 @@ public class RegistroFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mViewModel = new ViewModelProvider(requireActivity()).get(RegistroViewModel.class);
-        binding=RegistroFragmentBinding.inflate(inflater,container,false);
+        binding = RegistroFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        serviciosUsuario=new ServiciosUsuario();
+        serviciosUsuario = new ServiciosUsuario();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        etEmail = binding.etEmail;
         binding.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new DoRegister().execute(binding.etEmail.getText().toString(), binding.etPassword.getText().toString());
+                validator.validate();
+               // new DoRegister().execute(binding.etEmail.getText().toString(), binding.etPassword.getText().toString());
+            }
+        });
+
+        validator = new Validator(this);
+        validator.setValidationListener(new Validator.ValidationListener() {
+            @Override
+            public void onValidationSucceeded() {
+
+            }
+
+            @Override
+            public void onValidationFailed(List<ValidationError> errors) {
+                for (ValidationError error : errors) {
+                    View view = error.getView();
+                    String message = error.getCollatedErrorMessage(requireContext());
+
+                    // Display error messages ;)
+                    if (view instanceof EditText) {
+                        ((EditText) view).setError(message);
+                    } else {
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
 
     }
 
-    private class DoRegister extends AsyncTask<String,Void, Either<ApiError, UserKeystore>> {
+
+    private class DoRegister extends AsyncTask<String, Void, Either<ApiError, UserKeystore>> {
 
         @Override
         protected Either<ApiError, UserKeystore> doInBackground(String... strings) {
-            return serviciosUsuario.registrarUsuario(strings[0],strings[1]);
+            return serviciosUsuario.registrarUsuario(strings[0], strings[1]);
         }
 
         @Override
-        protected void onPostExecute(Either<ApiError,UserKeystore> result) {
-            if(result.isRight()) {
-                UserKeystore userKeystore=result.get();
+        protected void onPostExecute(Either<ApiError, UserKeystore> result) {
+            if (result.isRight()) {
+                UserKeystore userKeystore = result.get();
                 try {
                     char[] password = binding.etPassword.getText().toString().toCharArray();
                     ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(userKeystore.getKeystore(), Base64.URL_SAFE));
@@ -96,7 +129,7 @@ public class RegistroFragment extends Fragment {
                 } catch (Exception e) {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show();
                 }
-            }else{
+            } else {
                 Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
             }
         }

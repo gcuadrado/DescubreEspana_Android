@@ -27,6 +27,10 @@ public class ServiciosPuntoInteres {
         return puntoInteresDao.getAll();
     }
 
+    public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAllSinActivar() {
+        return puntoInteresDao.getAllSinActivar();
+    }
+
     public Either<ApiError, PuntoInteresDtoGetDetalle> get(int id) {
         return puntoInteresDao.get(id);
     }

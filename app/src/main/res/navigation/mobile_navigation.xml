@@ -83,4 +83,9 @@
             android:name="nuevoPunto"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
     </fragment>
+    <fragment
+        android:id="@+id/administracionFragment"
+        android:name="es.iesquevedo.descubreespana.ui.administracion.AdministracionFragment"
+        android:label="administracion_fragment"
+        tools:layout="@layout/administracion_fragment" />
 </navigation>

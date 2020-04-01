@@ -54,7 +54,7 @@ public class ValoracionAdapter extends RecyclerView.Adapter<ValoracionAdapter.Va
         holder.tvEmail.setText(valoracionDto.getUsuarioByIdUsuario().getEmail());
         holder.rbPuntuacion.setRating(valoracionDto.getPuntuacion());
         if(usuarioDtoGet!=null){
-            if(usuarioDtoGet.getEmail().equals(valoracionDto.getUsuarioByIdUsuario().getEmail())){
+            if(usuarioDtoGet.getEmail().equals(valoracionDto.getUsuarioByIdUsuario().getEmail()) || usuarioDtoGet.getTipoUsuario()==Constantes.ADMIN){
                 holder.btEliminar.setVisibility(View.VISIBLE);
             }
         }

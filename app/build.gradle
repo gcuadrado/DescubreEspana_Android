@@ -65,5 +65,6 @@ dependencies {
     // If you have a problem with Glide, please use the same Glide version or simply open an issue
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.schibstedspain.android:leku:6.4.0'
+    implementation 'com.mobsandgeeks:android-saripaar:2.0.3'
 
 }
