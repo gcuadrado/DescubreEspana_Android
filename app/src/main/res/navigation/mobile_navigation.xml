@@ -87,5 +87,9 @@
         android:id="@+id/administracionFragment"
         android:name="es.iesquevedo.descubreespana.ui.administracion.AdministracionFragment"
         android:label="administracion_fragment"
-        tools:layout="@layout/administracion_fragment" />
+        tools:layout="@layout/administracion_fragment" >
+        <action
+            android:id="@+id/action_administracionFragment_to_detallePoi"
+            app:destination="@id/detallePoi" />
+    </fragment>
 </navigation>

@@ -50,4 +50,12 @@ public class ServiciosPuntoInteres {
         }
         return multiparts;
     }
+
+    public Either<ApiError, String> aceptarPoi(Integer id) {
+        return puntoInteresDao.aceptar(id);
+    }
+
+    public Either<ApiError, String> eliminarPoi(Integer id) {
+        return puntoInteresDao.eliminar(id);
+    }
 }

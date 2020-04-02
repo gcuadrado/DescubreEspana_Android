@@ -16,11 +16,16 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.asynctask.AceptarPoiTask;
+import es.iesquevedo.descubreespana.asynctask.EliminarPoiTask;
 import es.iesquevedo.descubreespana.databinding.DetallePoiFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
+import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
+import es.iesquevedo.descubreespana.utils.Constantes;
+import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
 import es.iesquevedo.descubreespana.utils.VPGaleriaAdapter;
 import es.iesquevedo.descubreespana.utils.ValoracionAdapter;
 import io.vavr.control.Either;
@@ -53,6 +58,10 @@ public class DetallePoiFragment extends Fragment {
         serviciosPuntoInteres = new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
 
+        UsuarioDtoGet currentUser = GetSharedPreferences.getInstance().getCurrentUser(requireContext());
+        if (currentUser != null && currentUser.getTipoUsuario() == Constantes.ADMIN) {
+            binding.linearAceptarEliminar.setVisibility(View.VISIBLE);
+        }
 
         setListeners();
 
@@ -81,6 +90,39 @@ public class DetallePoiFragment extends Fragment {
                     binding.mostrarMasInfo.setText(R.string.boton_mas_info);
                     binding.detallesInfobasica.setMaxLines(4);
                 }
+            }
+        });
+        if (!poiMaestro.getActivado()) {
+            binding.btAceptar.setVisibility(View.VISIBLE);
+            binding.btAceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AceptarPoiTask(serviciosPuntoInteres) {
+                        @Override
+                        protected void onPostExecute(Either<ApiError, String> result) {
+                            if (result.isRight()) {
+                                binding.linearAceptarEliminar.setVisibility(View.GONE);
+                            } else {
+                                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }.execute(poiMaestro.getIdPuntoInteres());
+                }
+            });
+        }
+        binding.btEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new EliminarPoiTask(serviciosPuntoInteres) {
+                    @Override
+                    protected void onPostExecute(Either<ApiError, String> result) {
+                        if (result.isRight()) {
+                            navController.popBackStack();
+                        } else {
+                            Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.execute(poiMaestro.getIdPuntoInteres());
             }
         });
     }
@@ -112,13 +154,13 @@ public class DetallePoiFragment extends Fragment {
                     binding.rbValoracion.setRating(poi.getPuntuacion().floatValue());
                 }
 
-                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones(),requireContext()));
+                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones(), requireContext()));
 
                 //En caso de que haya más de una valoración, fijamos la altura del RecyclerView a 250dp, si solo hay una lo dejamos en wrap_content
-                if(poi.getValoraciones().size()>1){
-                    binding.recyclerValoraciones.getLayoutParams().height=(int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, requireContext().getResources().getDisplayMetrics());
-                }else{
-                    binding.recyclerValoraciones.getLayoutParams().height=ViewGroup.LayoutParams.WRAP_CONTENT;
+                if (poi.getValoraciones().size() > 1) {
+                    binding.recyclerValoraciones.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, requireContext().getResources().getDisplayMetrics());
+                } else {
+                    binding.recyclerValoraciones.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 }
 
             } else {

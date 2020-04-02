@@ -11,9 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import java.util.List;
 
+import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.AdministracionFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
@@ -26,6 +29,7 @@ public class AdministracionFragment extends Fragment {
     private AdministracionViewModel administracionViewModel;
     private AdministracionFragmentBinding binding;
     private ServiciosPuntoInteres serviciosPuntoInteres;
+    private NavController navController;
 
     public static AdministracionFragment newInstance() {
         return new AdministracionFragment();
@@ -43,6 +47,7 @@ public class AdministracionFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         serviciosPuntoInteres=new ServiciosPuntoInteres();
+        navController= Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         new GetPoisSinActivar().execute();
     }
 
@@ -56,7 +61,7 @@ public class AdministracionFragment extends Fragment {
         @Override
         protected void onPostExecute(Either<ApiError, List<PuntoInteresDtoGetMaestro>> result) {
             if(result.isRight()){
-                binding.recyclerPois.setAdapter(new PoiAdministracionAdapter(result.get()));
+                binding.recyclerPois.setAdapter(new PoiAdministracionAdapter(result.get(),navController));
             }else{
                 Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_LONG).show();
             }

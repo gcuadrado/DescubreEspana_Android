@@ -99,4 +99,40 @@ public class PuntoInteresDao {
         }
         return result;
     }
+
+    public Either<ApiError, String> aceptar(Integer id) {
+        Either<ApiError,String> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<String> call = serverDataApi.activarPoi(id);
+        try {
+            Response<String> response = call.execute();
+            if (response.isSuccessful()) {
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
+            }
+        }catch (Exception e){
+            Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
+        }
+        return result;
+    }
+
+    public Either<ApiError, String> eliminar(Integer id) {
+        Either<ApiError,String> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<String> call = serverDataApi.eliminarPoi(id);
+        try {
+            Response<String> response = call.execute();
+            if (response.isSuccessful()) {
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
+            }
+        }catch (Exception e){
+            Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
+        }
+        return result;
+    }
 }

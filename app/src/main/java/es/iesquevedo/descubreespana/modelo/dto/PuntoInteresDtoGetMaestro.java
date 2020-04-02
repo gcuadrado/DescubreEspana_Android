@@ -17,6 +17,7 @@ public class PuntoInteresDtoGetMaestro implements Parcelable {
     private String nombre;
     private Double latitud;
     private Double longitud;
+    private Boolean activado;
 
 
     @Override
@@ -30,6 +31,7 @@ public class PuntoInteresDtoGetMaestro implements Parcelable {
         dest.writeString(this.nombre);
         dest.writeValue(this.latitud);
         dest.writeValue(this.longitud);
+        dest.writeValue(this.activado);
     }
 
     protected PuntoInteresDtoGetMaestro(Parcel in) {
@@ -37,6 +39,7 @@ public class PuntoInteresDtoGetMaestro implements Parcelable {
         this.nombre = in.readString();
         this.latitud = (Double) in.readValue(Double.class.getClassLoader());
         this.longitud = (Double) in.readValue(Double.class.getClassLoader());
+        this.activado=(Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<PuntoInteresDtoGetMaestro> CREATOR = new Parcelable.Creator<PuntoInteresDtoGetMaestro>() {

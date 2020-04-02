@@ -15,6 +15,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -55,4 +56,10 @@ public interface ServerDataApi {
 
     @GET("api/puntos/administrar")
     Call<List<PuntoInteresDtoGetMaestro>> getAllPoisSinActivar();
+
+    @PUT("api/puntos/administrar/{id}")
+    Call<String> activarPoi(@Path("id") int id);
+
+    @DELETE("api/puntos/administrar/{id}")
+    Call<String> eliminarPoi(@Path("id") int id);
 }
