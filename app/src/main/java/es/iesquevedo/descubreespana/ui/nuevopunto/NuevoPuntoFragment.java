@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -126,6 +127,15 @@ public class NuevoPuntoFragment extends Fragment {
         @Override
         protected Either<ApiError, PuntoInteresDtoGetDetalle> doInBackground(Void... voids) {
             return serviciosPuntoInteres.addPoi(nuevoPuntoInteres,images, nuevoPuntoViewModel.getmImagenPrincipal().getValue());
+        }
+
+        @Override
+        protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
+            if(result.isRight()){
+                Toast.makeText(requireContext(),"Ok",Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
