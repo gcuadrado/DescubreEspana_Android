@@ -14,6 +14,8 @@ import androidx.cardview.widget.CardView;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
@@ -73,6 +75,9 @@ public class PoiAdministracionAdapter extends RecyclerView.Adapter<PoiAdministra
 
                 }
             });
+        Glide.with(mContext)
+                .load("http://192.168.1.101:8080"+puntos.get(position).getPath_imagen_principal())
+                .into(holder.ivFoto);
 
         holder.btEliminar.setOnClickListener(new View.OnClickListener() {
             @Override

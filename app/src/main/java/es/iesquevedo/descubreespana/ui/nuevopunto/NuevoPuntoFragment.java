@@ -125,7 +125,7 @@ public class NuevoPuntoFragment extends Fragment {
 
         @Override
         protected Either<ApiError, PuntoInteresDtoGetDetalle> doInBackground(Void... voids) {
-            return serviciosPuntoInteres.addPoi(nuevoPuntoInteres,images);
+            return serviciosPuntoInteres.addPoi(nuevoPuntoInteres,images, nuevoPuntoViewModel.getmImagenPrincipal().getValue());
         }
     }
 }

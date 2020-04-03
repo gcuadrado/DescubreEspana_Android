@@ -30,6 +30,7 @@ public interface ServerDataApi {
     @Multipart
     @POST("api/puntos")
     Call<PuntoInteresDtoGetDetalle> addPunto(
+            @Part MultipartBody.Part partImagenPrincipal,
             @Part List<MultipartBody.Part> files,
             @Part("data") PuntoInteresDtoGetDetalle data);
 

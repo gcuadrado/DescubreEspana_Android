@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class PuntoInteresDtoGetDetalle implements Parcelable {
     private int idPuntoInteres;
     private String nombre;
+    private String path_imagen_principal;
     private String resumen;
     private String infoDetallada;
     private String fechaInicio;
@@ -39,6 +40,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     protected PuntoInteresDtoGetDetalle(Parcel in) {
         idPuntoInteres = in.readInt();
         nombre = in.readString();
+        path_imagen_principal = in.readString();
         resumen = in.readString();
         infoDetallada = in.readString();
         fechaInicio = in.readString();
@@ -74,6 +76,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(idPuntoInteres);
         dest.writeString(nombre);
+        dest.writeString(path_imagen_principal);
         dest.writeString(resumen);
         dest.writeString(infoDetallada);
         dest.writeString(fechaInicio);
