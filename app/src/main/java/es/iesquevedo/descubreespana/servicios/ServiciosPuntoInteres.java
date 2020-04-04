@@ -58,4 +58,8 @@ public class ServiciosPuntoInteres {
     public Either<ApiError, String> eliminarPoi(Integer id) {
         return puntoInteresDao.eliminar(id);
     }
+
+    public Either<ApiError, String> updatePoi(PuntoInteresDtoGetDetalle puntoInteresDtoGetDetalle) {
+        return puntoInteresDao.updatePoi(puntoInteresDtoGetDetalle);
+    }
 }

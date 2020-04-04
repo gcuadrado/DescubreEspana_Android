@@ -38,6 +38,7 @@ public class DetallePoiFragment extends Fragment {
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private NavController navController;
     private boolean mostrarInfoPulsado;
+    private PuntoInteresDtoGetDetalle poiDetalle;
 
     public static DetallePoiFragment newInstance() {
         return new DetallePoiFragment();
@@ -61,6 +62,7 @@ public class DetallePoiFragment extends Fragment {
         UsuarioDtoGet currentUser = GetSharedPreferences.getInstance().getCurrentUser(requireContext());
         if (currentUser != null && currentUser.getTipoUsuario() == Constantes.ADMIN) {
             binding.linearAceptarEliminar.setVisibility(View.VISIBLE);
+            binding.btEditPoi.setVisibility(View.VISIBLE);
         }
 
         setListeners();
@@ -125,6 +127,14 @@ public class DetallePoiFragment extends Fragment {
                 }.execute(poiMaestro.getIdPuntoInteres());
             }
         });
+        binding.btEditPoi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (poiDetalle != null) {
+                    navController.navigate(DetallePoiFragmentDirections.actionDetallePoiToEdicionPoiFragment(poiDetalle));
+                }
+            }
+        });
     }
 
 
@@ -138,26 +148,26 @@ public class DetallePoiFragment extends Fragment {
         @Override
         protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
             if (result.isRight()) {
-                PuntoInteresDtoGetDetalle poi = result.get();
+                poiDetalle = result.get();
 
-                binding.detallesInfobasica.setText(poi.getInfoDetallada());
-                binding.detallesFecha.setText(poi.getFechaInicio());
-                binding.detallesCategoria.setText(poi.getCategoria());
-                binding.detallesDireccion.setText(poi.getDireccion());
-                binding.detallesAccesibilidad.setChecked(poi.getAccesibilidad());
-                binding.detallesHorario.setText(poi.getHorario());
-                binding.detallesCoste.setText(poi.getCoste().toString());
-                binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poi));
+                binding.detallesInfobasica.setText(poiDetalle.getInfoDetallada());
+                binding.detallesFecha.setText(poiDetalle.getFechaInicio());
+                binding.detallesCategoria.setText(poiDetalle.getCategoria());
+                binding.detallesDireccion.setText(poiDetalle.getDireccion());
+                binding.detallesAccesibilidad.setChecked(poiDetalle.getAccesibilidad());
+                binding.detallesHorario.setText(poiDetalle.getHorario());
+                binding.detallesCoste.setText(poiDetalle.getCoste().toString());
+                binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poiDetalle));
                 binding.indicator.setViewPager(binding.viewPagerGaleria);
-                if (poi.getPuntuacion() != null) {
-                    binding.detallesPuntuacion.setText(poi.getPuntuacion().toString());
-                    binding.rbValoracion.setRating(poi.getPuntuacion().floatValue());
+                if (poiDetalle.getPuntuacion() != null) {
+                    binding.detallesPuntuacion.setText(poiDetalle.getPuntuacion().toString());
+                    binding.rbValoracion.setRating(poiDetalle.getPuntuacion().floatValue());
                 }
 
-                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones(), requireContext()));
+                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poiDetalle.getValoraciones(), requireContext()));
 
                 //En caso de que haya más de una valoración, fijamos la altura del RecyclerView a 250dp, si solo hay una lo dejamos en wrap_content
-                if (poi.getValoraciones().size() > 1) {
+                if (poiDetalle.getValoraciones().size() > 1) {
                     binding.recyclerValoraciones.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, requireContext().getResources().getDisplayMetrics());
                 } else {
                     binding.recyclerValoraciones.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;

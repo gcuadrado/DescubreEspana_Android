@@ -63,4 +63,7 @@ public interface ServerDataApi {
 
     @DELETE("api/puntos/administrar/{id}")
     Call<String> eliminarPoi(@Path("id") int id);
+
+    @PUT("api/puntos/administrar")
+    Call<String> updatePoi(@Body PuntoInteresDtoGetDetalle puntoInteresDtoGetDetalle);
 }

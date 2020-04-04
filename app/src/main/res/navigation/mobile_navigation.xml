@@ -61,6 +61,9 @@
             android:id="@+id/action_detallePoi_to_valoracionFragment"
             app:destination="@id/valoracionFragment"
             app:enterAnim="@anim/fragment_fade_enter" />
+        <action
+            android:id="@+id/action_detallePoi_to_edicionPoiFragment"
+            app:destination="@id/edicionPoiFragment" />
     </fragment>
     <fragment
         android:id="@+id/valoracionFragment"
@@ -91,5 +94,14 @@
         <action
             android:id="@+id/action_administracionFragment_to_detallePoi"
             app:destination="@id/detallePoi" />
+    </fragment>
+    <fragment
+        android:id="@+id/edicionPoiFragment"
+        android:name="es.iesquevedo.descubreespana.ui.edicion_poi.EdicionPoiFragment"
+        android:label="edicion_poi_fragment"
+        tools:layout="@layout/edicion_poi_fragment" >
+        <argument
+            android:name="poi"
+            app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
     </fragment>
 </navigation>

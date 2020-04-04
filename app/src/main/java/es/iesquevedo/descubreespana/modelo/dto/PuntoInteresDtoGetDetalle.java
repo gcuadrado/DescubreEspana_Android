@@ -32,6 +32,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     private Double longitud;
     private String enlaceInfo;
     private String contacto;
+    private Boolean activado;
     private List<FotoPuntoInteresDtoGet> fotoPuntoInteresByIdPuntoInteres;
     private List<ValoracionDto> valoraciones;
     private UsuarioDtoGet usuarioByIdUsuario;
@@ -55,6 +56,8 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
         longitud = in.readByte() == 0x00 ? null : in.readDouble();
         enlaceInfo = in.readString();
         contacto = in.readString();
+        byte activadoVal = in.readByte();
+        activado = activadoVal == 0x02 ? null : activadoVal != 0x00;
         if (in.readByte() == 0x01) {
             fotoPuntoInteresByIdPuntoInteres = new ArrayList<FotoPuntoInteresDtoGet>();
             valoraciones=new ArrayList<ValoracionDto>();
@@ -114,6 +117,11 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
         }
         dest.writeString(enlaceInfo);
         dest.writeString(contacto);
+        if (activado == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (activado ? 0x01 : 0x00));
+        }
         if (fotoPuntoInteresByIdPuntoInteres == null) {
             dest.writeByte((byte) (0x00));
         } else {
