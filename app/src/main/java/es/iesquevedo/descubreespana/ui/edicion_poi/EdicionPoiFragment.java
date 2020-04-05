@@ -11,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.asynctask.UpdatePoiTask;
 import es.iesquevedo.descubreespana.databinding.EdicionPoiFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
@@ -25,6 +28,7 @@ public class EdicionPoiFragment extends Fragment {
     private EdicionPoiFragmentBinding binding;
     private PuntoInteresDtoGetDetalle poi;
     private ServiciosPuntoInteres serviciosPuntoInteres;
+    private NavController navController;
 
     public static EdicionPoiFragment newInstance() {
         return new EdicionPoiFragment();
@@ -42,12 +46,19 @@ public class EdicionPoiFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         poi=EdicionPoiFragmentArgs.fromBundle(getArguments()).getPoi();
+        navController= Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
         serviciosPuntoInteres=new ServiciosPuntoInteres();
         setContenidoPoi();
         setListeners();
     }
 
     private void setListeners() {
+        binding.btnImagePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(EdicionPoiFragmentDirections.actionEdicionPoiFragmentToEdicionFotosFragment(poi));
+            }
+        });
         binding.btEditarPunto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

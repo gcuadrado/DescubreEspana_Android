@@ -103,5 +103,17 @@
         <argument
             android:name="poi"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
+        <action
+            android:id="@+id/action_edicionPoiFragment_to_edicionFotosFragment"
+            app:destination="@id/edicionFotosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/edicionFotosFragment"
+        android:name="es.iesquevedo.descubreespana.ui.editar_fotos_poi.EdicionFotosFragment"
+        android:label="edicion_fotos_fragment"
+        tools:layout="@layout/edicion_fotos_fragment" >
+        <argument
+            android:name="poi"
+            app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
     </fragment>
 </navigation>

@@ -19,19 +19,23 @@ import es.iesquevedo.descubreespana.ui.nuevopunto.NuevoPuntoViewModel;
 
 public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHolder> {
     private List<Image> images;
-    private int selectedPosition=-1;
+    private int selectedPosition = -1;
     private NuevoPuntoViewModel nuevoPuntoViewModel;
     private Context mContext;
 
     public FotosAdapter(List<Image> images, NuevoPuntoViewModel nuevoPuntoViewModel) {
         this.images = images;
-        this.nuevoPuntoViewModel=nuevoPuntoViewModel;
+        this.nuevoPuntoViewModel = nuevoPuntoViewModel;
+    }
+
+    public FotosAdapter(List<Image> images) {
+        this.images = images;
     }
 
     @NonNull
     @Override
     public FotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        mContext=parent.getContext();
+        mContext = parent.getContext();
         return new FotoViewHolder(LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.foto_row, parent, false));
@@ -40,21 +44,22 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
     @Override
     public void onBindViewHolder(@NonNull FotoViewHolder holder, int position) {
         Glide.with(mContext).load(images.get(position).getPath()).into(holder.imageViewFoto);
-        if(position==selectedPosition){
+        if (position == selectedPosition) {
             holder.imageViewFoto.setBackgroundResource(R.drawable.highlight);
-        }else{
+        } else {
             holder.imageViewFoto.setBackground(null);
         }
         holder.imageViewFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedPosition=position;
-                nuevoPuntoViewModel.getmImagenPrincipal().setValue(images.get(position));
+                selectedPosition = position;
+                if (nuevoPuntoViewModel != null) {
+                    nuevoPuntoViewModel.getmImagenPrincipal().setValue(images.get(position));
+                }
                 notifyDataSetChanged();
             }
         });
     }
-
 
 
     @Override
@@ -62,12 +67,12 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
         return images.size();
     }
 
-    public class FotoViewHolder extends RecyclerView.ViewHolder{
+    public class FotoViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageViewFoto;
 
         public FotoViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageViewFoto=itemView.findViewById(R.id.imageViewFoto);
+            imageViewFoto = itemView.findViewById(R.id.imageViewFoto);
         }
     }
 }
