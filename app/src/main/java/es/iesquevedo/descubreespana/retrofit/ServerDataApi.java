@@ -3,6 +3,7 @@ package es.iesquevedo.descubreespana.retrofit;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.modelo.UserKeystore;
+import es.iesquevedo.descubreespana.modelo.dto.FotoPuntoInteresDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
@@ -69,4 +70,10 @@ public interface ServerDataApi {
 
     @DELETE("api/fotos/{id}")
     Call<String> deleteFoto(@Path("id") int id);
+
+    @Multipart
+    @POST("api/fotos")
+    Call<List<FotoPuntoInteresDtoGet>> insertFotos(
+            @Part List<MultipartBody.Part> files,
+            @Part("data") PuntoInteresDtoGetDetalle data);
 }

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,11 +20,16 @@ import com.esafirm.imagepicker.model.Image;
 
 import java.util.List;
 
+import es.iesquevedo.descubreespana.asynctask.InsertFotosTask;
 import es.iesquevedo.descubreespana.databinding.EdicionFotosFragmentBinding;
+import es.iesquevedo.descubreespana.modelo.ApiError;
+import es.iesquevedo.descubreespana.modelo.dto.FotoPuntoInteresDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
+import es.iesquevedo.descubreespana.servicios.ServiciosFotos;
 import es.iesquevedo.descubreespana.ui.edicion_poi.EdicionPoiFragmentArgs;
 import es.iesquevedo.descubreespana.utils.EdicionFotosAdapter;
 import es.iesquevedo.descubreespana.utils.FotosAdapter;
+import io.vavr.control.Either;
 
 public class EdicionFotosFragment extends Fragment {
 
@@ -31,6 +37,7 @@ public class EdicionFotosFragment extends Fragment {
     private EdicionFotosFragmentBinding binding;
     private List<Image> images;
     private PuntoInteresDtoGetDetalle poi;
+    private ServiciosFotos serviciosFotos;
 
     public static EdicionFotosFragment newInstance() {
         return new EdicionFotosFragment();
@@ -47,6 +54,7 @@ public class EdicionFotosFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        serviciosFotos=new ServiciosFotos();
         poi= EdicionPoiFragmentArgs.fromBundle(getArguments()).getPoi();
         binding.recyclerFotosActuales.setAdapter(new EdicionFotosAdapter(poi));
         binding.btExplorarAlmacenamiento.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +75,32 @@ public class EdicionFotosFragment extends Fragment {
                             .start();
                 } catch (Exception e) {
                     Log.d("descubreespana", null, e);
+                }
+            }
+        });
+
+        binding.btSubirFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(images!=null && !images.isEmpty() && poi!=null) {
+                    new InsertFotosTask(serviciosFotos, poi, images){
+                        @Override
+                        protected void onPostExecute(Either<ApiError, List<FotoPuntoInteresDtoGet>> result) {
+                            if(result.isRight()) {
+                                //Añadimos las fotos nuevas a la lista de fotos del POI
+                                poi.getFotoPuntoInteresByIdPuntoInteres().addAll(result.get());
+                                //Notificamos al RecyclerView de que la lista de fotos ha cambiado
+                                ((EdicionFotosAdapter) binding.recyclerFotosActuales.getAdapter()).notifyDataSetChanged();
+                                //Limpiamos la lista de imagenes recogidas de almacenamiento interno
+                                images.clear();
+                                //Notificamos al recycler de fotos nuevas que la lista ha cambiado
+                                ((FotosAdapter) binding.recyclerFotosNuevas.getAdapter()).notifyDataSetChanged();
+
+                            }else{
+                                Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }.execute();
                 }
             }
         });

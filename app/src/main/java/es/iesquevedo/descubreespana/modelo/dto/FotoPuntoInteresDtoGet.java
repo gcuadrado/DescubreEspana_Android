@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class FotoPuntoInteresDtoGet implements Parcelable {
     private int idFoto;
     private String path;
+    private int poiId;
 
 
     @Override
@@ -26,11 +27,13 @@ public class FotoPuntoInteresDtoGet implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.idFoto);
         dest.writeString(this.path);
+        dest.writeInt(this.poiId);
     }
 
     protected FotoPuntoInteresDtoGet(Parcel in) {
         this.idFoto = in.readInt();
         this.path = in.readString();
+        this.poiId=in.readInt();
     }
 
     public static final Parcelable.Creator<FotoPuntoInteresDtoGet> CREATOR = new Parcelable.Creator<FotoPuntoInteresDtoGet>() {

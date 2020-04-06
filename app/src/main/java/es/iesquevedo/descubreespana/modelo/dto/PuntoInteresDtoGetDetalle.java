@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class PuntoInteresDtoGetDetalle implements Parcelable {
     private int idPuntoInteres;
     private String nombre;
-    private String path_imagen_principal;
+    private String pathImagenPrincipal;
     private String resumen;
     private String infoDetallada;
     private String fechaInicio;
@@ -33,6 +33,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     private String enlaceInfo;
     private String contacto;
     private Boolean activado;
+    private String uuidFolderFilename;
     private List<FotoPuntoInteresDtoGet> fotoPuntoInteresByIdPuntoInteres;
     private List<ValoracionDto> valoraciones;
     private UsuarioDtoGet usuarioByIdUsuario;
@@ -41,7 +42,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     protected PuntoInteresDtoGetDetalle(Parcel in) {
         idPuntoInteres = in.readInt();
         nombre = in.readString();
-        path_imagen_principal = in.readString();
+        pathImagenPrincipal = in.readString();
         resumen = in.readString();
         infoDetallada = in.readString();
         fechaInicio = in.readString();
@@ -58,6 +59,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
         contacto = in.readString();
         byte activadoVal = in.readByte();
         activado = activadoVal == 0x02 ? null : activadoVal != 0x00;
+        uuidFolderFilename=in.readString();
         if (in.readByte() == 0x01) {
             fotoPuntoInteresByIdPuntoInteres = new ArrayList<FotoPuntoInteresDtoGet>();
             valoraciones=new ArrayList<ValoracionDto>();
@@ -79,7 +81,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(idPuntoInteres);
         dest.writeString(nombre);
-        dest.writeString(path_imagen_principal);
+        dest.writeString(pathImagenPrincipal);
         dest.writeString(resumen);
         dest.writeString(infoDetallada);
         dest.writeString(fechaInicio);
@@ -122,6 +124,7 @@ public class PuntoInteresDtoGetDetalle implements Parcelable {
         } else {
             dest.writeByte((byte) (activado ? 0x01 : 0x00));
         }
+        dest.writeString(uuidFolderFilename);
         if (fotoPuntoInteresByIdPuntoInteres == null) {
             dest.writeByte((byte) (0x00));
         } else {

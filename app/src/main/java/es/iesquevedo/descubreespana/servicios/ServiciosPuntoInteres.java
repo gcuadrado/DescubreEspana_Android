@@ -3,7 +3,6 @@ package es.iesquevedo.descubreespana.servicios;
 import com.esafirm.imagepicker.model.Image;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.dao.PuntoInteresDao;
@@ -17,9 +16,11 @@ import okhttp3.RequestBody;
 
 public class ServiciosPuntoInteres {
     private PuntoInteresDao puntoInteresDao;
+    private ServiciosFotos serviciosFotos;
 
     public ServiciosPuntoInteres() {
         this.puntoInteresDao = new PuntoInteresDao();
+        this.serviciosFotos=new ServiciosFotos();
     }
 
     public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAll() {
@@ -38,18 +39,10 @@ public class ServiciosPuntoInteres {
         //Crear Multipart de la imagen principal
         File file=new File(imagenPrincipal.getPath());
         MultipartBody.Part partImagenPrincipal=MultipartBody.Part.createFormData("imagenPrincipal", file.getName(), RequestBody.create(file,MediaType.parse("image/*")));
-       return puntoInteresDao.addPoi(nuevoPuntoInteres,getMultipartFromImages(images),partImagenPrincipal);
+       return puntoInteresDao.addPoi(nuevoPuntoInteres,serviciosFotos.getMultipartFromImages(images),partImagenPrincipal);
     }
 
-    public List<MultipartBody.Part> getMultipartFromImages( List<Image> images){
-        List<MultipartBody.Part> multiparts=new ArrayList<>();
-        for(Image image: images){
-            File file=new File(image.getPath());
-            MultipartBody.Part multiPart=MultipartBody.Part.createFormData("image", file.getName(), RequestBody.create(file,MediaType.parse("image/*")));
-            multiparts.add(multiPart);
-        }
-        return multiparts;
-    }
+
 
     public Either<ApiError, String> aceptarPoi(Integer id) {
         return puntoInteresDao.aceptar(id);
