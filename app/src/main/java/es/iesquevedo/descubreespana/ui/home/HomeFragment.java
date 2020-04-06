@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -35,9 +35,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.schibstedspain.leku.LocationPickerActivity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.asynctask.GetPoisTask;
 import es.iesquevedo.descubreespana.databinding.FragmentHomeBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
@@ -60,16 +63,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
     private NavController navController;
     private FragmentHomeBinding binding;
+    private GetPoisTask getPoisTask;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-
-        binding=FragmentHomeBinding.inflate(inflater,container,false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
         if (mMapFragment == null) {
             FragmentManager fm = getChildFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -78,12 +80,24 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             ft.commit();
         }
         mMapFragment.getMapAsync(this);
+        inicializarComponentes();
+        return binding.getRoot();
+    }
+
+    private void inicializarComponentes() {
+        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         serviciosPuntoInteres = new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        setListeners();
+        getPoisTask = getGetPoisAsyncTask();
+    }
+
+    private void setListeners() {
         binding.floatingAddPunto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(GetSharedPreferences.getInstance().getCurrentUser(requireContext())!=null){
+                if (GetSharedPreferences.getInstance().getCurrentUser(requireContext()) != null) {
                     Intent locationPickerIntent = new LocationPickerActivity.Builder()
                             .withGeolocApiKey(requireActivity().getString(R.string.google_maps_key))
                             .withSearchZone("es_ES")
@@ -95,12 +109,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                             .build(requireContext());
 
                     startActivityForResult(locationPickerIntent, 1);
-                }else{
+                } else {
                     navController.navigate(R.id.navigation_login);
                 }
             }
         });
-        return binding.getRoot();
     }
 
     @Override
@@ -133,7 +146,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(homeViewModel.getCameraPosition().getValue()));
         }
 
-        new GetPois().execute();
+        getPoisTask.execute();
+
+        //Listener para llevar a la vista detalle cuando se clicke en un POI
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -142,27 +157,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private class GetPois extends AsyncTask<Void, Void, Either<ApiError, List<PuntoInteresDtoGetMaestro>>> {
-
-        @Override
-        protected Either<ApiError, List<PuntoInteresDtoGetMaestro>> doInBackground(Void... voids) {
-            return serviciosPuntoInteres.getAll();
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, List<PuntoInteresDtoGetMaestro>> result) {
-            if (result.isRight()) {
-                List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros = result.get();
-                if (mMap != null && puntoInteresDtoGetMaestros != null) {
-                    for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
-                        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(), poi.getLongitud())).title(poi.getNombre()));
-                        marker.setTag(poi);
-                    }
-                }
-            } else {
-                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+    @NotNull
+    private GetPoisTask getGetPoisAsyncTask() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        AlertDialog dialog = builder.create();
+        return new GetPoisTask(serviciosPuntoInteres){
+            @Override
+            protected void onPreExecute() { dialog.show();
             }
-        }
+
+            @Override
+            protected void onPostExecute(Either<ApiError, List<PuntoInteresDtoGetMaestro>> result) {
+               dialog.dismiss();
+                if (result.isRight()) {
+                    List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros = result.get();
+                    if (mMap != null && puntoInteresDtoGetMaestros != null) {
+                        for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
+                            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(), poi.getLongitud())).title(poi.getNombre()));
+                            marker.setTag(poi);
+                        }
+                    }
+                } else {
+                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        };
     }
 
     @Override
@@ -177,9 +198,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 }
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 
@@ -193,13 +211,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode==1 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
             if (requestCode == 1) {
                 Double latitude = data.getDoubleExtra(LATITUDE, 0.0);
                 Double longitude = data.getDoubleExtra(LONGITUDE, 0.0);
                 String address = data.getStringExtra(LOCATION_ADDRESS);
 
-                PuntoInteresDtoGetDetalle puntoInteresDtoGetDetalle=PuntoInteresDtoGetDetalle.builder()
+                PuntoInteresDtoGetDetalle puntoInteresDtoGetDetalle = PuntoInteresDtoGetDetalle.builder()
                         .latitud(latitude)
                         .longitud(longitude)
                         .direccion(address)

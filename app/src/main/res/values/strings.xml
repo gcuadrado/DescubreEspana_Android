@@ -22,6 +22,7 @@
     <string name="boton_enviar_valoracion">Enviar valoración</string>
     <string name="boton_mas_info">Más información</string>
     <string name="boton_menos_info">Minimizar información</string>
+    <string name="tv_loading_message">Cargando...</string>
     <string-array name="categorias">
         <item>Histórico</item>
         <item>Monumental</item>

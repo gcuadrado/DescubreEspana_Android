@@ -20,6 +20,7 @@ import androidx.navigation.Navigation;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.Password;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
@@ -44,6 +45,8 @@ public class RegistroFragment extends Fragment {
     private Validator validator;
     @Email(message = "Debes indicar un email válido")
     private EditText etEmail;
+    @Password
+    private EditText etPassword;
 
     public static RegistroFragment newInstance() {
         return new RegistroFragment();
@@ -63,11 +66,12 @@ public class RegistroFragment extends Fragment {
         serviciosUsuario = new ServiciosUsuario();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         etEmail = binding.etEmail;
+        etPassword=binding.etPassword;
+
         binding.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validator.validate();
-               // new DoRegister().execute(binding.etEmail.getText().toString(), binding.etPassword.getText().toString());
             }
         });
 
@@ -75,7 +79,7 @@ public class RegistroFragment extends Fragment {
         validator.setValidationListener(new Validator.ValidationListener() {
             @Override
             public void onValidationSucceeded() {
-
+                new DoRegister().execute(binding.etEmail.getText().toString(), binding.etPassword.getText().toString());
             }
 
             @Override

@@ -1,6 +1,5 @@
 package es.iesquevedo.descubreespana.ui.detalle_poi;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -10,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.asynctask.AceptarPoiTask;
 import es.iesquevedo.descubreespana.asynctask.EliminarPoiTask;
+import es.iesquevedo.descubreespana.asynctask.GetPoiDetalleTask;
 import es.iesquevedo.descubreespana.databinding.DetallePoiFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
@@ -39,6 +40,7 @@ public class DetallePoiFragment extends Fragment {
     private NavController navController;
     private boolean mostrarInfoPulsado;
     private PuntoInteresDtoGetDetalle poiDetalle;
+    private GetPoiDetalleTask getPoiDetalleTask;
 
     public static DetallePoiFragment newInstance() {
         return new DetallePoiFragment();
@@ -58,6 +60,7 @@ public class DetallePoiFragment extends Fragment {
         poiMaestro = DetallePoiFragmentArgs.fromBundle(getArguments()).getPuntoInteres();
         serviciosPuntoInteres = new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        getPoiDetalleTask = getPoiAsyncTask();
 
         UsuarioDtoGet currentUser = GetSharedPreferences.getInstance().getCurrentUser(requireContext());
         if (currentUser != null && currentUser.getTipoUsuario() == Constantes.ADMIN) {
@@ -68,7 +71,57 @@ public class DetallePoiFragment extends Fragment {
         setListeners();
 
 
-        new GetPoiDetalle().execute(poiMaestro.getIdPuntoInteres());
+        getPoiDetalleTask.execute(poiMaestro.getIdPuntoInteres());
+    }
+
+    private GetPoiDetalleTask getPoiAsyncTask() {
+        //Creamos el Alert dialog que mostrará el cartel de cargando
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        AlertDialog dialog = builder.create();
+
+        return new GetPoiDetalleTask(serviciosPuntoInteres) {
+            @Override
+            protected void onPreExecute() {
+                dialog.show();
+            }
+
+            @Override
+            protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
+                dialog.dismiss();
+                if (result.isRight()) {
+                    poiDetalle = result.get();
+
+                    binding.detallesInfobasica.setText(poiDetalle.getInfoDetallada());
+                    binding.detallesFecha.setText(poiDetalle.getFechaInicio());
+                    binding.detallesCategoria.setText(poiDetalle.getCategoria());
+                    binding.detallesDireccion.setText(poiDetalle.getDireccion());
+                    binding.detallesAccesibilidad.setChecked(poiDetalle.getAccesibilidad());
+                    binding.detallesHorario.setText(poiDetalle.getHorario());
+                    binding.detallesCoste.setText(poiDetalle.getCoste().toString());
+                    binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poiDetalle));
+                    binding.indicator.setViewPager(binding.viewPagerGaleria);
+                    if (poiDetalle.getPuntuacion() != null) {
+                        binding.detallesPuntuacion.setText(poiDetalle.getPuntuacion().toString());
+                        binding.rbValoracion.setRating(poiDetalle.getPuntuacion().floatValue());
+                    }
+
+                    binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poiDetalle.getValoraciones(), requireContext()));
+
+                    //En caso de que haya más de una valoración, fijamos la altura del RecyclerView a 250dp, si solo hay una lo dejamos en wrap_content
+                    if (poiDetalle.getValoraciones().size() > 1) {
+                        binding.recyclerValoraciones.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, requireContext().getResources().getDisplayMetrics());
+                    } else {
+                        binding.recyclerValoraciones.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    }
+
+                } else {
+                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                    navController.navigate(R.id.navigation_home);
+                }
+            }
+        };
     }
 
     private void setListeners() {
@@ -137,47 +190,5 @@ public class DetallePoiFragment extends Fragment {
         });
     }
 
-
-    private class GetPoiDetalle extends AsyncTask<Integer, Void, Either<ApiError, PuntoInteresDtoGetDetalle>> {
-
-        @Override
-        protected Either<ApiError, PuntoInteresDtoGetDetalle> doInBackground(Integer... integers) {
-            return serviciosPuntoInteres.get(integers[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
-            if (result.isRight()) {
-                poiDetalle = result.get();
-
-                binding.detallesInfobasica.setText(poiDetalle.getInfoDetallada());
-                binding.detallesFecha.setText(poiDetalle.getFechaInicio());
-                binding.detallesCategoria.setText(poiDetalle.getCategoria());
-                binding.detallesDireccion.setText(poiDetalle.getDireccion());
-                binding.detallesAccesibilidad.setChecked(poiDetalle.getAccesibilidad());
-                binding.detallesHorario.setText(poiDetalle.getHorario());
-                binding.detallesCoste.setText(poiDetalle.getCoste().toString());
-                binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poiDetalle));
-                binding.indicator.setViewPager(binding.viewPagerGaleria);
-                if (poiDetalle.getPuntuacion() != null) {
-                    binding.detallesPuntuacion.setText(poiDetalle.getPuntuacion().toString());
-                    binding.rbValoracion.setRating(poiDetalle.getPuntuacion().floatValue());
-                }
-
-                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poiDetalle.getValoraciones(), requireContext()));
-
-                //En caso de que haya más de una valoración, fijamos la altura del RecyclerView a 250dp, si solo hay una lo dejamos en wrap_content
-                if (poiDetalle.getValoraciones().size() > 1) {
-                    binding.recyclerValoraciones.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, requireContext().getResources().getDisplayMetrics());
-                } else {
-                    binding.recyclerValoraciones.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                }
-
-            } else {
-                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
-                navController.navigate(R.id.navigation_home);
-            }
-        }
-    }
 
 }

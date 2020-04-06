@@ -57,6 +57,10 @@ public class EdicionFotosFragment extends Fragment {
         serviciosFotos=new ServiciosFotos();
         poi= EdicionPoiFragmentArgs.fromBundle(getArguments()).getPoi();
         binding.recyclerFotosActuales.setAdapter(new EdicionFotosAdapter(poi));
+        setListeners();
+    }
+
+    private void setListeners() {
         binding.btExplorarAlmacenamiento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

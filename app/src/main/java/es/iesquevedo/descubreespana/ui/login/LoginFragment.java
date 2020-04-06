@@ -16,6 +16,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.Password;
+
+import java.util.List;
+
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.databinding.FragmentLoginBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
@@ -30,20 +37,18 @@ public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;
     private UserAccountViewModel userAccountViewModel;
     private ServiciosUsuario serviciosUsuario;
+    @Email(message = "Email no válido")
     private EditText etEmail;
+    @Password(message = "Contraseña no válida")
     private EditText etPassword;
     private FragmentLoginBinding binding;
     private NavController navController;
+    private Validator validator;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         loginViewModel =new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         userAccountViewModel=new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        /*if(loginViewModel.getBinding().getValue()!=null){
-            binding=loginViewModel.getBinding().getValue();
-        }else {
-            binding = FragmentLoginBinding.inflate(inflater, container, false);
-        }*/
         binding=FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -55,6 +60,28 @@ public class LoginFragment extends Fragment {
         etPassword = binding.etPassword;
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         serviciosUsuario = new ServiciosUsuario();
+        validator=new Validator(this);
+        validator.setValidationListener(new Validator.ValidationListener() {
+            @Override
+            public void onValidationSucceeded() {
+                new DoLogin().execute(etEmail.getText().toString(), etPassword.getText().toString());
+            }
+
+            @Override
+            public void onValidationFailed(List<ValidationError> errors) {
+                for (ValidationError error : errors) {
+                    View view = error.getView();
+                    String message = error.getCollatedErrorMessage(requireContext());
+
+                    // Display error messages ;)
+                    if (view instanceof EditText) {
+                        ((EditText) view).setError(message);
+                    } else {
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
         setListeners();
 
        // etEmail.setText(loginViewModel.getEmail().getValue());
@@ -68,7 +95,7 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new DoLogin().execute(etEmail.getText().toString(), etPassword.getText().toString());
+                validator.validate();
             }
         });
 
@@ -113,6 +140,20 @@ public class LoginFragment extends Fragment {
 
     private class ResetPassword extends AsyncTask<String,Void,Either<ApiError,String>>{
 
+        private AlertDialog dialog;
+
+        public ResetPassword() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setCancelable(false); // if you want user to wait for some process to finish,
+            builder.setView(R.layout.layout_loading_dialog);
+            dialog = builder.create();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog.show();
+        }
+
         @Override
         protected Either<ApiError, String> doInBackground(String... strings) {
             return serviciosUsuario.reestablecerPassword(strings[0]);
@@ -120,6 +161,7 @@ public class LoginFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Either<ApiError, String> result) {
+            dialog.dismiss();
             if(result.isRight()){
                 new AlertDialog.Builder(requireContext())
                         .setTitle("¡Hecho!")
