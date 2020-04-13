@@ -1,6 +1,7 @@
 package es.iesquevedo.descubreespana.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +11,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.asynctask.AceptarPoiTask;
 import es.iesquevedo.descubreespana.asynctask.EliminarPoiTask;
+import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
@@ -75,8 +82,20 @@ public class PoiAdministracionAdapter extends RecyclerView.Adapter<PoiAdministra
 
                 }
             });
+        String url = ConfigOkHttpRetrofit.getInstance().getRetrofit().baseUrl().toString() + puntos.get(position).getPathImagenPrincipal();
         Glide.with(mContext)
-                .load("http://192.168.1.101:8080"+puntos.get(position).getPath_imagen_principal())
+                .load(url)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(holder.ivFoto);
 
         holder.btEliminar.setOnClickListener(new View.OnClickListener() {

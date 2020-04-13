@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.modelo.dto.FotoPuntoInteresDtoGet;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 
@@ -39,7 +40,7 @@ public class VPGaleriaAdapter extends RecyclerView.Adapter<VPGaleriaAdapter.Phot
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-        String url = "http://192.168.1.101:8080" + fotos.get(position).getPath();
+        String url = ConfigOkHttpRetrofit.getInstance().getRetrofit().baseUrl().toString() + fotos.get(position).getPath();
             Glide.with(mContext).load(url)
                     .fitCenter()
                     .centerCrop()
