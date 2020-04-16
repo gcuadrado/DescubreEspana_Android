@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
@@ -55,6 +56,9 @@ public class RegistroFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_login).setChecked(true);
+
         mViewModel = new ViewModelProvider(requireActivity()).get(RegistroViewModel.class);
         binding = RegistroFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();

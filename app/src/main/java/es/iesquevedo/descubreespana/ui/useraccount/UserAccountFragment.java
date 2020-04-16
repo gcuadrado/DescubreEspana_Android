@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.databinding.UserAccountFragmentBinding;
@@ -35,6 +37,9 @@ public class UserAccountFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_login).setChecked(true);
+
         binding=binding.inflate(inflater, container, false);
         mViewModel = new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
         return binding.getRoot();

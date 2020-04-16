@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
@@ -47,6 +48,10 @@ public class LoginFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        //Seleccionar el item en la barra de navigación inferior cada vez que se pone este fragment
+        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_login).setChecked(true);
+
         loginViewModel =new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         userAccountViewModel=new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
         binding=FragmentLoginBinding.inflate(inflater, container, false);
@@ -127,7 +132,7 @@ public class LoginFragment extends Fragment {
                 UsuarioDtoGet usuarioDtoGet=result.get();
                //Guardamos el usuario actual en Preferences
                 GetSharedPreferences.getInstance().setCurrentUser(usuarioDtoGet,requireContext());
-                Toast.makeText(requireContext(),usuarioDtoGet.getIdUsuario()+":"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(),"Has iniciado sesión como:"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
 
                if(!navController.popBackStack()) {
                    navController.navigate(R.id.userAccountFragment);
@@ -165,7 +170,7 @@ public class LoginFragment extends Fragment {
             if(result.isRight()){
                 new AlertDialog.Builder(requireContext())
                         .setTitle("¡Hecho!")
-                        .setMessage("Se ha enviado una neuva contraseña a tu email")
+                        .setMessage("Se ha enviado una nueva contraseña a tu email")
 
                         // Specifying a listener allows you to take an action before dismissing the dialog.
                         // The dialog is automatically dismissed when a dialog button is clicked.

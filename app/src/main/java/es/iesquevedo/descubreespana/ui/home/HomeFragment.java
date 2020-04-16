@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.schibstedspain.leku.LocationPickerActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -68,6 +69,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        //Seleccionar el item en la barra de navigación inferior cada vez que se pone este fragment
+        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
+
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);

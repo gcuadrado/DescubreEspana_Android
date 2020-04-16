@@ -19,13 +19,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:text="Imagen principal:" />
+            android:text="Imagen principal*:" />
 
         <ImageView
             android:id="@+id/imageViewPrincipal"
             android:layout_gravity="center_horizontal"
             android:layout_width="200dp"
             android:layout_height="200dp"
+            android:padding="10dp"
             android:visibility="gone"
             android:src="@android:drawable/ic_menu_help" />
 
@@ -40,12 +41,12 @@
             android:id="@+id/btnImagePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Imagenes" />
+            android:text="Imagenes*" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre:" />
+            android:text="Nombre*:" />
 
         <EditText
             android:id="@+id/etNombre"
@@ -58,7 +59,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tv_info_basica" />
+            android:text="Información básica*:" />
 
         <EditText
             android:id="@+id/etInformacion"
@@ -136,7 +137,7 @@
             android:id="@+id/textView7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tv_horario" />
+            android:text="Horario*:" />
 
         <EditText
             android:id="@+id/etHorario"

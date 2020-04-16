@@ -33,8 +33,12 @@ public class ServiciosFotos {
     public List<MultipartBody.Part> getMultipartFromImages(List<Image> images){
         List<MultipartBody.Part> multiparts=new ArrayList<>();
         for(Image image: images){
+            //Obtenemos el archivo con el path de la imagen
             File file=new File(image.getPath());
-            MultipartBody.Part multiPart=MultipartBody.Part.createFormData("image", file.getName(), RequestBody.create(file, MediaType.parse("image/*")));
+            //Creamos el part con el archivo
+            MultipartBody.Part multiPart=
+                    MultipartBody.Part.createFormData("image", file.getName(),
+                            RequestBody.create(file, MediaType.parse("image/*")));
             multiparts.add(multiPart);
         }
         return multiparts;

@@ -40,7 +40,8 @@ public class VPGaleriaAdapter extends RecyclerView.Adapter<VPGaleriaAdapter.Phot
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-        String url = ConfigOkHttpRetrofit.getInstance().getRetrofit().baseUrl().toString() + fotos.get(position).getPath();
+        String url = ConfigOkHttpRetrofit.getInstance().getRetrofit().baseUrl().toString()
+                + fotos.get(position).getPath();
             Glide.with(mContext).load(url)
                     .fitCenter()
                     .centerCrop()

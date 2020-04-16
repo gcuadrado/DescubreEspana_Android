@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.asynctask.AceptarPoiTask;
 import es.iesquevedo.descubreespana.asynctask.EliminarPoiTask;
@@ -49,6 +51,10 @@ public class DetallePoiFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        //Seleccionar el item en la barra de navigación inferior cada vez que se pone este fragment
+        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
+
         binding = DetallePoiFragmentBinding.inflate(inflater, container, false);
         detallePoiViewModel = new ViewModelProvider(this).get(DetallePoiViewModel.class);
         return binding.getRoot();
