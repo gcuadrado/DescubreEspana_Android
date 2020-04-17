@@ -45,12 +45,7 @@ public class ServiciosUsuario {
                 .email(email)
                 .password(password)
                 .build();
-
-        if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && !password.isEmpty()) {
             result = usuarioDao.loginUsuario(usuarioDtoPost);
-        } else {
-            result = Either.left(new ApiError(400, "Asegurate de que has introducido un email válido y la contraseña no está vacía"));
-        }
 
         return result;
     }

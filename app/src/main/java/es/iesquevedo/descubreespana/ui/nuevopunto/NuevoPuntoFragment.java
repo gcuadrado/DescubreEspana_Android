@@ -34,6 +34,7 @@ import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.asynctask.AddPoiTask;
 import es.iesquevedo.descubreespana.databinding.NuevoPuntoFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
@@ -62,6 +63,7 @@ public class NuevoPuntoFragment extends Fragment {
     @NotEmpty(message = "Establece un horario, si no lo conoces, indícalo")
     private EditText etHorario;
     private NavController navController;
+    private AlertDialog dialog;
 
     public static NuevoPuntoFragment newInstance() {
         return new NuevoPuntoFragment();
@@ -91,7 +93,7 @@ public class NuevoPuntoFragment extends Fragment {
             @Override
             public void onValidationSucceeded() {
                 if (images != null && !images.isEmpty()) {
-                    if(nuevoPuntoViewModel.getmImagenPrincipal().getValue()!=null) {
+                    if (nuevoPuntoViewModel.getmImagenPrincipal().getValue() != null) {
                         nuevoPuntoInteres.setNombre(binding.etNombre.getText().toString());
                         nuevoPuntoInteres.setInfoDetallada(binding.etInformacion.getText().toString());
                         nuevoPuntoInteres.setResumen(binding.etInformacion.getText().toString());
@@ -104,12 +106,38 @@ public class NuevoPuntoFragment extends Fragment {
                         nuevoPuntoInteres.setAccesibilidad(binding.cbAccesibilidad.isChecked());
                         nuevoPuntoInteres.setHorario(binding.etHorario.getText().toString());
 
-                        new AddPoi().execute();
-                    }else{
+                        new AddPoiTask(serviciosPuntoInteres, nuevoPuntoInteres, images, nuevoPuntoViewModel.getmImagenPrincipal().getValue()) {
+                            @Override
+                            protected void onPreExecute() {
+                                dialog.show();
+                            }
+
+                            @Override
+                            protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
+                                dialog.dismiss();
+                                if (result.isRight()) {
+                                    new AlertDialog.Builder(requireContext())
+                                            .setCancelable(false)
+                                            .setTitle("¡Perfecto!")
+                                            .setMessage("Tu solicitud ha sido recogida correctamente. Te enviaremos un email en cuanto la aceptemos")
+                                            .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                    navController.navigate(R.id.navigation_home);
+                                                }
+                                            })
+                                            .create().show();
+                                } else {
+                                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }.execute();
+                    } else {
                         binding.imageViewPrincipal.setBackgroundResource(R.drawable.error_imagen_principal);
                         Toast.makeText(requireContext(), "Selecciona una de tus imágenes como imagen principal", Toast.LENGTH_LONG).show();
                     }
-                }else{
+                } else {
                     //Le metemos el background como tag para recuperarlo luego
                     binding.btnImagePicker.setTag(binding.btnImagePicker.getBackground());
                     binding.btnImagePicker.setBackgroundResource(R.drawable.error_imagen_principal);
@@ -172,15 +200,19 @@ public class NuevoPuntoFragment extends Fragment {
         etEnlace = binding.etEnlace;
         etFecha = binding.etFecha;
         etHorario = binding.etHorario;
-        navController = Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         validator = new Validator(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog = builder.create();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             //Eliminamos el recuadro rojo en caso de que lo tuviera
-            if(binding.btnImagePicker.getTag()!=null) {
+            if (binding.btnImagePicker.getTag() != null) {
                 binding.btnImagePicker.setBackground((Drawable) binding.btnImagePicker.getTag());
             }
 
@@ -205,31 +237,5 @@ public class NuevoPuntoFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private class AddPoi extends AsyncTask<Void, Void, Either<ApiError, PuntoInteresDtoGetDetalle>> {
 
-        @Override
-        protected Either<ApiError, PuntoInteresDtoGetDetalle> doInBackground(Void... voids) {
-            return serviciosPuntoInteres.addPoi(nuevoPuntoInteres, images, nuevoPuntoViewModel.getmImagenPrincipal().getValue());
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, PuntoInteresDtoGetDetalle> result) {
-            if (result.isRight()) {
-                new AlertDialog.Builder(requireContext())
-                        .setCancelable(false)
-                        .setTitle("¡Perfecto!")
-                        .setMessage("Tu solicitud ha sido recogida correctamente. Te enviaremos un email en cuanto la aceptemos")
-                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                navController.navigate(R.id.navigation_home);
-                            }
-                        })
-                        .create().show();
-            } else {
-                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 }

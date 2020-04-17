@@ -70,12 +70,12 @@
         android:name="es.iesquevedo.descubreespana.ui.valoracion.ValoracionFragment"
         android:label="Valoración"
         tools:layout="@layout/valoracion_fragment">
-        <argument
-            android:name="idPoi"
-            app:argType="integer" />
         <action
             android:id="@+id/action_valoracionFragment_to_navigation_login"
             app:destination="@id/navigation_login" />
+        <argument
+            android:name="poi"
+            app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
     </fragment>
     <fragment
         android:id="@+id/nuevoPuntoFragment"

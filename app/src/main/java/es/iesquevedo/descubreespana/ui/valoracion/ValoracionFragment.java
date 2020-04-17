@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -18,8 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.asynctask.AddValoracionTask;
 import es.iesquevedo.descubreespana.databinding.ValoracionFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
+import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.ValoracionDto;
 import es.iesquevedo.descubreespana.servicios.ServiciosValoraciones;
 import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
@@ -31,8 +34,10 @@ public class ValoracionFragment extends Fragment {
     private ValoracionViewModel valoracionViewModel;
     private ValoracionFragmentBinding binding;
     private ServiciosValoraciones serviciosValoraciones;
-    private int idPoi;
+    private PuntoInteresDtoGetDetalle poi;
     private NavController navController;
+    private AlertDialog dialog;
+    private AddValoracionTask addValoracionTask;
 
     public static ValoracionFragment newInstance() {
         return new ValoracionFragment();
@@ -42,63 +47,56 @@ public class ValoracionFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         valoracionViewModel = new ViewModelProvider(requireActivity()).get(ValoracionViewModel.class);
-        binding=ValoracionFragmentBinding.inflate(inflater,container,false);
+        binding = ValoracionFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        serviciosValoraciones=new ServiciosValoraciones();
-        idPoi=ValoracionFragmentArgs.fromBundle(getArguments()).getIdPoi();
-        navController = Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
-        new GetValoraciones().execute();
+        poi = ValoracionFragmentArgs.fromBundle(getArguments()).getPoi();
+        inicializarViews();
         binding.btValorar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(GetSharedPreferences.getInstance().getCurrentUser(requireContext())!=null) {
-                    new AddValoracion().execute();
-                }else{
+                if (GetSharedPreferences.getInstance().getCurrentUser(requireContext()) != null) {
+                    if (binding.ratingBar.getRating() != 0f) {
+                        addValoracionTask.execute();
+                    }else{
+                        Toast.makeText(requireContext(),"Es necesario que asignes una puntuación",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
                     navController.navigate(R.id.navigation_login);
                 }
             }
         });
     }
 
-
-    private class AddValoracion extends AsyncTask<Void,Void, Either<ApiError, ValoracionDto>>{
-
-        @Override
-        protected Either<ApiError, ValoracionDto> doInBackground(Void... voids) {
-            return serviciosValoraciones.addValoracion((int)binding.ratingBar.getRating(),binding.etValoracion.getText().toString(),idPoi);
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, ValoracionDto> result) {
-            if(result.isRight()){
-                Toast.makeText(requireContext(),"Valoración añadida",Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_LONG).show();
+    private void inicializarViews() {
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        serviciosValoraciones = new ServiciosValoraciones();
+        binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(poi.getValoraciones(), requireContext()));
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog = builder.create();
+        addValoracionTask = new AddValoracionTask(serviciosValoraciones, (int) binding.ratingBar.getRating(), binding.etValoracion.getText().toString(), poi.getIdPuntoInteres()) {
+            @Override
+            protected void onPreExecute() {
+                dialog.show();
             }
-        }
+
+            @Override
+            protected void onPostExecute(Either<ApiError, ValoracionDto> result) {
+                dialog.dismiss();
+                if (result.isRight()) {
+                    Toast.makeText(requireContext(), "Valoración añadida", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        };
     }
 
-    private class GetValoraciones extends AsyncTask<Void,Void, Either<ApiError, List<ValoracionDto>>>{
-
-        @Override
-        protected Either<ApiError, List<ValoracionDto>> doInBackground(Void... voids) {
-            return serviciosValoraciones.getAll(idPoi);
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, List<ValoracionDto>> result) {
-            if(result.isRight()){
-                binding.recyclerValoraciones.setLayoutManager(new LinearLayoutManager(requireContext()));
-                binding.recyclerValoraciones.setAdapter(new ValoracionAdapter(result.get(),requireContext()));
-            }else{
-                Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
 }

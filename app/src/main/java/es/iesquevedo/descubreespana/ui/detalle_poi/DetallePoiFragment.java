@@ -135,7 +135,9 @@ public class DetallePoiFragment extends Fragment {
         binding.btValoraciones.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navController.navigate(DetallePoiFragmentDirections.actionDetallePoiToValoracionFragment(poiMaestro.getIdPuntoInteres()));
+                if(poiDetalle!=null) {
+                    navController.navigate(DetallePoiFragmentDirections.actionDetallePoiToValoracionFragment(poiDetalle));
+                }
             }
         });
 

@@ -25,6 +25,8 @@ import com.mobsandgeeks.saripaar.annotation.Password;
 import java.util.List;
 
 import es.iesquevedo.descubreespana.R;
+import es.iesquevedo.descubreespana.asynctask.LoginTask;
+import es.iesquevedo.descubreespana.asynctask.ResetPasswordTask;
 import es.iesquevedo.descubreespana.databinding.FragmentLoginBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
 import es.iesquevedo.descubreespana.modelo.dto.UsuarioDtoGet;
@@ -36,7 +38,6 @@ import io.vavr.control.Either;
 public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
-    private UserAccountViewModel userAccountViewModel;
     private ServiciosUsuario serviciosUsuario;
     @Email(message = "Email no válido")
     private EditText etEmail;
@@ -44,32 +45,74 @@ public class LoginFragment extends Fragment {
     private EditText etPassword;
     private FragmentLoginBinding binding;
     private NavController navController;
-    private Validator validator;
+    private Validator loginValidator;
+    private AlertDialog dialog;
+    private LoginTask loginTask;
+    private ResetPasswordTask resetPasswordTask;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         //Seleccionar el item en la barra de navigación inferior cada vez que se pone este fragment
-        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.nav_view);
         bottomNavigationView.getMenu().findItem(R.id.navigation_login).setChecked(true);
 
-        loginViewModel =new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-        userAccountViewModel=new ViewModelProvider(requireActivity()).get(UserAccountViewModel.class);
-        binding=FragmentLoginBinding.inflate(inflater, container, false);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+        binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        inicializarViews();
+        setListeners();
+
+        // etEmail.setText(loginViewModel.getEmail().getValue());
+        // etPassword.setText(loginViewModel.getmPassword().getValue());
+    }
+
+    private void inicializarViews() {
         etEmail = binding.etEmail;
         etPassword = binding.etPassword;
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         serviciosUsuario = new ServiciosUsuario();
-        validator=new Validator(this);
-        validator.setValidationListener(new Validator.ValidationListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog = builder.create();
+        loginValidator = new Validator(this);
+    }
+
+    private void setListeners() {
+        Button registerButton = binding.registerButton;
+        Button loginButton = binding.loginButton;
+        Button resetPasswordButton = binding.restPasswordButton;
+        loginValidator.setValidationListener(new Validator.ValidationListener() {
             @Override
             public void onValidationSucceeded() {
-                new DoLogin().execute(etEmail.getText().toString(), etPassword.getText().toString());
+                new LoginTask(serviciosUsuario, etEmail.getText().toString(), etPassword.getText().toString()) {
+                    @Override
+                    protected void onPreExecute() {
+                        dialog.show();
+                    }
+
+                    @Override
+                    protected void onPostExecute(Either<ApiError, UsuarioDtoGet> result) {
+                        dialog.dismiss();
+                        if (result.isRight()) {
+                            UsuarioDtoGet usuarioDtoGet = result.get();
+                            //Guardamos el usuario actual en Preferences
+                            GetSharedPreferences.getInstance().setCurrentUser(usuarioDtoGet, requireContext());
+                            Toast.makeText(requireContext(), "Has iniciado sesión como:" + usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
+
+                            if (!navController.popBackStack()) {
+                                navController.navigate(R.id.userAccountFragment);
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.execute();
             }
 
             @Override
@@ -87,20 +130,10 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-        setListeners();
-
-       // etEmail.setText(loginViewModel.getEmail().getValue());
-       // etPassword.setText(loginViewModel.getmPassword().getValue());
-    }
-
-    private void setListeners() {
-        Button registerButton = binding.registerButton;
-        Button loginButton = binding.loginButton;
-        Button resetPasswordButton=binding.restPasswordButton;
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                validator.validate();
+                loginValidator.validate();
             }
         });
 
@@ -113,84 +146,41 @@ public class LoginFragment extends Fragment {
         resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ResetPassword().execute(etEmail.getText().toString());
+                new ResetPasswordTask(serviciosUsuario, etEmail.getText().toString()) {
+                    @Override
+                    protected void onPreExecute() {
+                        dialog.show();
+                    }
+
+                    @Override
+                    protected void onPostExecute(Either<ApiError, String> result) {
+                        dialog.dismiss();
+                        if (result.isRight()) {
+                            new AlertDialog.Builder(requireContext())
+                                    .setTitle("¡Hecho!")
+                                    .setMessage("Se ha enviado una nueva contraseña a tu email")
+
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setNeutralButton("OK", null)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                        } else {
+                            new AlertDialog.Builder(requireContext())
+                                    .setTitle("Error :(")
+                                    .setMessage(result.getLeft().getMessage())
+
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setNeutralButton("OK", null)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                        }
+                    }
+                }.execute();
             }
         });
     }
-
-
-    private class DoLogin extends AsyncTask<String,Void, Either<ApiError,UsuarioDtoGet>>{
-
-        @Override
-        protected Either<ApiError,UsuarioDtoGet> doInBackground(String... strings) {
-            return serviciosUsuario.loginUsuario(strings[0],strings[1]);
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, UsuarioDtoGet> result) {
-            if(result.isRight()){
-                UsuarioDtoGet usuarioDtoGet=result.get();
-               //Guardamos el usuario actual en Preferences
-                GetSharedPreferences.getInstance().setCurrentUser(usuarioDtoGet,requireContext());
-                Toast.makeText(requireContext(),"Has iniciado sesión como:"+usuarioDtoGet.getEmail(), Toast.LENGTH_LONG).show();
-
-               if(!navController.popBackStack()) {
-                   navController.navigate(R.id.userAccountFragment);
-               }
-            }else{
-                Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private class ResetPassword extends AsyncTask<String,Void,Either<ApiError,String>>{
-
-        private AlertDialog dialog;
-
-        public ResetPassword() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setCancelable(false); // if you want user to wait for some process to finish,
-            builder.setView(R.layout.layout_loading_dialog);
-            dialog = builder.create();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            dialog.show();
-        }
-
-        @Override
-        protected Either<ApiError, String> doInBackground(String... strings) {
-            return serviciosUsuario.reestablecerPassword(strings[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Either<ApiError, String> result) {
-            dialog.dismiss();
-            if(result.isRight()){
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("¡Hecho!")
-                        .setMessage("Se ha enviado una nueva contraseña a tu email")
-
-                        // Specifying a listener allows you to take an action before dismissing the dialog.
-                        // The dialog is automatically dismissed when a dialog button is clicked.
-                       .setNeutralButton("OK",null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }else{
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Error :(")
-                        .setMessage(result.getLeft().getMessage())
-
-                        // Specifying a listener allows you to take an action before dismissing the dialog.
-                        // The dialog is automatically dismissed when a dialog button is clicked.
-                        .setNeutralButton("OK",null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-        }
-    }
-
 
 
     @Override

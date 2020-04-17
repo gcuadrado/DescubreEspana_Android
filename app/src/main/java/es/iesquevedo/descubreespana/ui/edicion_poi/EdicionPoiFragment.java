@@ -31,6 +31,7 @@ public class EdicionPoiFragment extends Fragment {
     private PuntoInteresDtoGetDetalle poi;
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private NavController navController;
+    private UpdatePoiTask updatePoiTask;
 
     public static EdicionPoiFragment newInstance() {
         return new EdicionPoiFragment();
@@ -51,11 +52,24 @@ public class EdicionPoiFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setContenidoPoi();
+        setListeners();
+    }
+
+    private void inicializarViews(){
         poi=EdicionPoiFragmentArgs.fromBundle(getArguments()).getPoi();
         navController= Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
         serviciosPuntoInteres=new ServiciosPuntoInteres();
-        setContenidoPoi();
-        setListeners();
+        updatePoiTask = new UpdatePoiTask(serviciosPuntoInteres) {
+            @Override
+            protected void onPostExecute(Either<ApiError, String> result) {
+                if (result.isRight()) {
+                    Toast.makeText(requireContext(), "OK", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
     private void setListeners() {
@@ -79,18 +93,9 @@ public class EdicionPoiFragment extends Fragment {
                 poi.setEnlaceInfo(binding.etEnlace.getText().toString());
                 poi.setAccesibilidad(binding.cbAccesibilidad.isChecked());
                 poi.setHorario(binding.etHorario.getText().toString());
-                
-                
-                new UpdatePoiTask(serviciosPuntoInteres){
-                    @Override
-                    protected void onPostExecute(Either<ApiError, String> result) {
-                        if(result.isRight()){
-                            Toast.makeText(requireContext(),"OK",Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }.execute(poi);
+
+
+                updatePoiTask.execute(poi);
             }
         });
     }
