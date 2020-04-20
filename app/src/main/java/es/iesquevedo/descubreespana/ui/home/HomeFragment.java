@@ -180,7 +180,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros = result.get();
                     if (mMap != null && puntoInteresDtoGetMaestros != null) {
                         for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
-                            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(poi.getLatitud(), poi.getLongitud())).title(poi.getNombre()));
+                            MarkerOptions poiMarker = new MarkerOptions()
+                                    .position(new LatLng(poi.getLatitud(), poi.getLongitud()))
+                                    .title(poi.getNombre());
+                            Marker marker = mMap.addMarker(poiMarker);
                             marker.setTag(poi);
                         }
                     }

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,8 +19,11 @@ import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
+import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.asynctask.InsertFotosTask;
 import es.iesquevedo.descubreespana.databinding.EdicionFotosFragmentBinding;
 import es.iesquevedo.descubreespana.modelo.ApiError;
@@ -38,6 +42,7 @@ public class EdicionFotosFragment extends Fragment {
     private List<Image> images;
     private PuntoInteresDtoGetDetalle poi;
     private ServiciosFotos serviciosFotos;
+    private AlertDialog dialog;
 
     public static EdicionFotosFragment newInstance() {
         return new EdicionFotosFragment();
@@ -54,10 +59,18 @@ public class EdicionFotosFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        inicializarViews();
+        setListeners();
+    }
+
+    private void inicializarViews() {
         serviciosFotos=new ServiciosFotos();
         poi= EdicionPoiFragmentArgs.fromBundle(getArguments()).getPoi();
         binding.recyclerFotosActuales.setAdapter(new EdicionFotosAdapter(poi));
-        setListeners();
+        dialog=new AlertDialog.Builder(requireContext())
+                .setCancelable(false)
+                .setView(R.layout.layout_loading_dialog)
+                .create();
     }
 
     private void setListeners() {
@@ -87,27 +100,34 @@ public class EdicionFotosFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(images!=null && !images.isEmpty() && poi!=null) {
-                    new InsertFotosTask(serviciosFotos, poi, images){
-                        @Override
-                        protected void onPostExecute(Either<ApiError, List<FotoPuntoInteresDtoGet>> result) {
-                            if(result.isRight()) {
-                                //Añadimos las fotos nuevas a la lista de fotos del POI
-                                poi.getFotoPuntoInteresByIdPuntoInteres().addAll(result.get());
-                                //Notificamos al RecyclerView de que la lista de fotos ha cambiado
-                                ((EdicionFotosAdapter) binding.recyclerFotosActuales.getAdapter()).notifyDataSetChanged();
-                                //Limpiamos la lista de imagenes recogidas de almacenamiento interno
-                                images.clear();
-                                //Notificamos al recycler de fotos nuevas que la lista ha cambiado
-                                ((FotosAdapter) binding.recyclerFotosNuevas.getAdapter()).notifyDataSetChanged();
-
-                            }else{
-                                Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }.execute();
+                    dialog.show();
+                    getInsertFotosTask().execute();
                 }
             }
         });
+    }
+
+    @NotNull
+    private InsertFotosTask getInsertFotosTask() {
+        return new InsertFotosTask(serviciosFotos, poi, images){
+            @Override
+            protected void onPostExecute(Either<ApiError, List<FotoPuntoInteresDtoGet>> result) {
+                dialog.dismiss();
+                if(result.isRight()) {
+                    //Añadimos las fotos nuevas a la lista de fotos del POI
+                    poi.getFotoPuntoInteresByIdPuntoInteres().addAll(result.get());
+                    //Notificamos al RecyclerView de que la lista de fotos ha cambiado
+                    ((EdicionFotosAdapter) binding.recyclerFotosActuales.getAdapter()).notifyDataSetChanged();
+                    //Limpiamos la lista de imagenes recogidas de almacenamiento interno
+                    images.clear();
+                    //Notificamos al recycler de fotos nuevas que la lista ha cambiado
+                    ((FotosAdapter) binding.recyclerFotosNuevas.getAdapter()).notifyDataSetChanged();
+
+                }else{
+                    Toast.makeText(requireContext(),result.getLeft().getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
 

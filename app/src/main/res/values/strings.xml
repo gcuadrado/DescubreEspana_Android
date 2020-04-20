@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Descubre España</string>
     <string name="title_home">Mapa</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Cuenta de usuario</string>
+    <string name="title_listado">Listado</string>
+    <string name="title_usuario">Cuenta de usuario</string>
     <string name="title_activity_maps">Map</string>
     <string name="boton_registro">Registrarse</string>
     <string name="boton_login">Iniciar sesión</string>

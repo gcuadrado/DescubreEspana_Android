@@ -9,12 +9,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.jetbrains.annotations.NotNull;
 
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.asynctask.UpdatePoiTask;
@@ -31,7 +34,7 @@ public class EdicionPoiFragment extends Fragment {
     private PuntoInteresDtoGetDetalle poi;
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private NavController navController;
-    private UpdatePoiTask updatePoiTask;
+    private AlertDialog dialog;
 
     public static EdicionPoiFragment newInstance() {
         return new EdicionPoiFragment();
@@ -52,6 +55,7 @@ public class EdicionPoiFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        inicializarViews();
         setContenidoPoi();
         setListeners();
     }
@@ -60,9 +64,18 @@ public class EdicionPoiFragment extends Fragment {
         poi=EdicionPoiFragmentArgs.fromBundle(getArguments()).getPoi();
         navController= Navigation.findNavController(requireActivity(),R.id.nav_host_fragment);
         serviciosPuntoInteres=new ServiciosPuntoInteres();
-        updatePoiTask = new UpdatePoiTask(serviciosPuntoInteres) {
+        dialog=new AlertDialog.Builder(requireContext())
+                .setCancelable(false)
+                .setView(R.layout.layout_loading_dialog)
+                .create();
+    }
+
+    @NotNull
+    private UpdatePoiTask getUpdatePoiTask() {
+        return new UpdatePoiTask(serviciosPuntoInteres) {
             @Override
             protected void onPostExecute(Either<ApiError, String> result) {
+                dialog.dismiss();
                 if (result.isRight()) {
                     Toast.makeText(requireContext(), "OK", Toast.LENGTH_SHORT).show();
                 } else {
@@ -82,6 +95,7 @@ public class EdicionPoiFragment extends Fragment {
         binding.btEditarPunto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.show();
                 poi.setNombre(binding.etNombre.getText().toString());
                 poi.setInfoDetallada(binding.etInformacion.getText().toString());
                 poi.setResumen(binding.etInformacion.getText().toString());
@@ -95,7 +109,7 @@ public class EdicionPoiFragment extends Fragment {
                 poi.setHorario(binding.etHorario.getText().toString());
 
 
-                updatePoiTask.execute(poi);
+                getUpdatePoiTask().execute(poi);
             }
         });
     }

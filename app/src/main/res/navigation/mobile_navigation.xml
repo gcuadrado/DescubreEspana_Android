@@ -26,19 +26,19 @@
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="es.iesquevedo.descubreespana.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_listado"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_login"
         android:name="es.iesquevedo.descubreespana.ui.login.LoginFragment"
-        android:label="@string/title_notifications"
+        android:label="Inicia sesión"
         tools:layout="@layout/fragment_login" />
     <fragment
         android:id="@+id/userAccountFragment"
         android:name="es.iesquevedo.descubreespana.ui.useraccount.UserAccountFragment"
-        android:label="user_account_fragment"
-        tools:layout="@layout/user_account_fragment" >
+        android:label="Mi usuario"
+        tools:layout="@layout/user_account_fragment">
         <action
             android:id="@+id/action_userAccountFragment_to_navigation_login"
             app:destination="@id/navigation_login"
@@ -48,7 +48,7 @@
     <fragment
         android:id="@+id/registroFragment"
         android:name="es.iesquevedo.descubreespana.ui.registro.RegistroFragment"
-        android:label="RegistroFragment" />
+        android:label="Regístrate" />
     <fragment
         android:id="@+id/detallePoi"
         android:name="es.iesquevedo.descubreespana.ui.detalle_poi.DetallePoiFragment"
@@ -80,8 +80,8 @@
     <fragment
         android:id="@+id/nuevoPuntoFragment"
         android:name="es.iesquevedo.descubreespana.ui.nuevopunto.NuevoPuntoFragment"
-        android:label="nuevo_punto_fragment"
-        tools:layout="@layout/nuevo_punto_fragment" >
+        android:label="Añade un nuevo punto"
+        tools:layout="@layout/nuevo_punto_fragment">
         <argument
             android:name="nuevoPunto"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
@@ -89,8 +89,8 @@
     <fragment
         android:id="@+id/administracionFragment"
         android:name="es.iesquevedo.descubreespana.ui.administracion.AdministracionFragment"
-        android:label="administracion_fragment"
-        tools:layout="@layout/administracion_fragment" >
+        android:label="Administración"
+        tools:layout="@layout/administracion_fragment">
         <action
             android:id="@+id/action_administracionFragment_to_detallePoi"
             app:destination="@id/detallePoi" />
@@ -98,8 +98,8 @@
     <fragment
         android:id="@+id/edicionPoiFragment"
         android:name="es.iesquevedo.descubreespana.ui.edicion_poi.EdicionPoiFragment"
-        android:label="edicion_poi_fragment"
-        tools:layout="@layout/edicion_poi_fragment" >
+        android:label="Edición"
+        tools:layout="@layout/edicion_poi_fragment">
         <argument
             android:name="poi"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />
@@ -110,8 +110,8 @@
     <fragment
         android:id="@+id/edicionFotosFragment"
         android:name="es.iesquevedo.descubreespana.ui.editar_fotos_poi.EdicionFotosFragment"
-        android:label="edicion_fotos_fragment"
-        tools:layout="@layout/edicion_fotos_fragment" >
+        android:label="Edición de imágenes"
+        tools:layout="@layout/edicion_fotos_fragment">
         <argument
             android:name="poi"
             app:argType="es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle" />

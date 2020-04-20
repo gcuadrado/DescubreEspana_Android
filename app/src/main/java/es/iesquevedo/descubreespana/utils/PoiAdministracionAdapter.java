@@ -1,5 +1,6 @@
 package es.iesquevedo.descubreespana.utils;
 
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +42,7 @@ public class PoiAdministracionAdapter extends RecyclerView.Adapter<PoiAdministra
     private NavController navController;
     private ServiciosPuntoInteres serviciosPuntoInteres;
     private Context mContext;
+    private AlertDialog dialog;
 
     public PoiAdministracionAdapter(List<PuntoInteresDtoGetMaestro> puntos, NavController navController) {
         this.puntos = puntos;
@@ -51,6 +54,10 @@ public class PoiAdministracionAdapter extends RecyclerView.Adapter<PoiAdministra
     @Override
     public PoiAdminViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mContext=parent.getContext();
+        dialog=new androidx.appcompat.app.AlertDialog.Builder(mContext)
+                .setCancelable(false)
+                .setView(R.layout.layout_loading_dialog)
+                .create();
         return new PoiAdminViewHolder(LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.poi_admin_row, parent, false));
@@ -68,9 +75,11 @@ public class PoiAdministracionAdapter extends RecyclerView.Adapter<PoiAdministra
             holder.btAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    dialog.show();
                     new AceptarPoiTask(serviciosPuntoInteres){
                         @Override
                         protected void onPostExecute(Either<ApiError, String> result) {
+                            dialog.dismiss();
                             if(result.isRight()){
                                 puntos.remove(puntos.get(position));
                                 notifyDataSetChanged();
@@ -101,9 +110,11 @@ public class PoiAdministracionAdapter extends RecyclerView.Adapter<PoiAdministra
         holder.btEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.show();
                 new EliminarPoiTask(serviciosPuntoInteres){
                     @Override
                     protected void onPostExecute(Either<ApiError, String> result) {
+                        dialog.dismiss();
                         if(result.isRight()){
                             puntos.remove(puntos.get(position));
                             notifyDataSetChanged();
