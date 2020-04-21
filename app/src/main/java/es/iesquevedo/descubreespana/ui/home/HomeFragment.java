@@ -29,7 +29,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,6 +51,7 @@ import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetDetalle;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
 import es.iesquevedo.descubreespana.servicios.ServiciosPuntoInteres;
 import es.iesquevedo.descubreespana.utils.GetSharedPreferences;
+import es.iesquevedo.descubreespana.utils.MarkerInfoWindowAdapter;
 import io.vavr.control.Either;
 
 import static com.schibstedspain.leku.LocationPickerActivityKt.LATITUDE;
@@ -95,7 +99,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         serviciosPuntoInteres = new ServiciosPuntoInteres();
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         setListeners();
-        getPoisTask = getGetPoisAsyncTask();
     }
 
     private void setListeners() {
@@ -151,7 +154,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(homeViewModel.getCameraPosition().getValue()));
         }
 
-        getPoisTask.execute();
+        //Personalizamos el mapa para que no incluya los places por defecto(negocios etc...)
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
+        //Añadimos el InfoWindow personalizado
+        googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(requireContext()));
+        //Cargamos los puntos de interés
+        getGetPoisAsyncTask().execute();
 
         //Listener para llevar a la vista detalle cuando se clicke en un POI
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -180,11 +188,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     List<PuntoInteresDtoGetMaestro> puntoInteresDtoGetMaestros = result.get();
                     if (mMap != null && puntoInteresDtoGetMaestros != null) {
                         for (PuntoInteresDtoGetMaestro poi : puntoInteresDtoGetMaestros) {
+                            BitmapDescriptor icon= null;
+                            switch (poi.getCategoria()){
+                                case "HISTORICO":
+                                case "Histórico":
+                                    icon=BitmapDescriptorFactory.fromResource(R.drawable.historico);
+                                    break;
+                                case "OCIO":
+                                    icon=BitmapDescriptorFactory.fromResource(R.drawable.ocio);
+                                    break;
+                                case "Naturaleza":
+                                    icon=BitmapDescriptorFactory.fromResource(R.drawable.naturaleza);
+                                    break;
+                                case "Cultural":
+                                    icon=BitmapDescriptorFactory.fromResource(R.drawable.cultural);
+                                    break;
+                                case "Monumental":
+                                    icon=BitmapDescriptorFactory.fromResource(R.drawable.monumental);
+                                    break;
+                            }
                             MarkerOptions poiMarker = new MarkerOptions()
                                     .position(new LatLng(poi.getLatitud(), poi.getLongitud()))
-                                    .title(poi.getNombre());
+                                    .title(poi.getNombre())
+                                    .icon(icon);
                             Marker marker = mMap.addMarker(poiMarker);
                             marker.setTag(poi);
+
                         }
                     }
                 } else {

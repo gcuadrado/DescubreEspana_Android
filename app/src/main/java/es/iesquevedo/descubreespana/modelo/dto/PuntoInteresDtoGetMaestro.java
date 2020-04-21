@@ -16,6 +16,7 @@ public class PuntoInteresDtoGetMaestro implements Parcelable {
     private int idPuntoInteres;
     private String nombre;
     private String pathImagenPrincipal;
+    private String categoria;
     private Double latitud;
     private Double longitud;
     private Boolean activado;
@@ -31,6 +32,7 @@ public class PuntoInteresDtoGetMaestro implements Parcelable {
         dest.writeInt(this.idPuntoInteres);
         dest.writeString(this.nombre);
         dest.writeString(this.pathImagenPrincipal);
+        dest.writeString(this.categoria);
         dest.writeValue(this.latitud);
         dest.writeValue(this.longitud);
         dest.writeValue(this.activado);
@@ -40,6 +42,7 @@ public class PuntoInteresDtoGetMaestro implements Parcelable {
         this.idPuntoInteres = in.readInt();
         this.nombre = in.readString();
         this.pathImagenPrincipal = in.readString();
+        this.categoria=in.readString();
         this.latitud = (Double) in.readValue(Double.class.getClassLoader());
         this.longitud = (Double) in.readValue(Double.class.getClassLoader());
         this.activado=(Boolean) in.readValue(Boolean.class.getClassLoader());
