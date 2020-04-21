@@ -27,6 +27,10 @@ public class ServiciosPuntoInteres {
         return puntoInteresDao.getAll();
     }
 
+    public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAllCercanos(double latitud,double longitud) {
+        return puntoInteresDao.getAllCercanos(latitud,longitud);
+    }
+
     public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAllSinActivar() {
         return puntoInteresDao.getAllSinActivar();
     }

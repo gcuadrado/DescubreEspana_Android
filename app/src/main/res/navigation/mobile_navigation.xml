@@ -27,7 +27,11 @@
         android:id="@+id/navigation_dashboard"
         android:name="es.iesquevedo.descubreespana.ui.dashboard.ListadoFragment"
         android:label="@string/title_listado"
-        tools:layout="@layout/listado_fragment" />
+        tools:layout="@layout/listado_fragment" >
+        <action
+            android:id="@+id/action_navigation_dashboard_to_detallePoi"
+            app:destination="@id/detallePoi" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_login"

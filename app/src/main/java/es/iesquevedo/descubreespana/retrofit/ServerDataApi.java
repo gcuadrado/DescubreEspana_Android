@@ -22,11 +22,12 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ServerDataApi {
-   /* @POST("login")
-    Call<LoginResponse> login(@Body DigiRequestBody digiRequestBody);*/
 
     @GET("api/puntos")
     Call<List<PuntoInteresDtoGetMaestro>> getAllPois();
+
+    @GET("api/puntos/cercanos")
+    Call<List<PuntoInteresDtoGetMaestro>> getAllCercanos(@Query("latitud") double latitud,@Query("longitud") double longitud);
 
     @Multipart
     @POST("api/puntos")
@@ -76,4 +77,6 @@ public interface ServerDataApi {
     Call<List<FotoPuntoInteresDtoGet>> insertFotos(
             @Part List<MultipartBody.Part> files,
             @Part("data") PuntoInteresDtoGetDetalle data);
+
+
 }

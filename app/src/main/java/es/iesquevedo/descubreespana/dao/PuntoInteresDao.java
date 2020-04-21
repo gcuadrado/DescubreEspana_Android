@@ -45,6 +45,24 @@ public class PuntoInteresDao {
         return result;
     }
 
+    public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAllCercanos(double latitud, double longitud) {
+        Either<ApiError,List<PuntoInteresDtoGetMaestro>> result;
+        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
+        Call<List<PuntoInteresDtoGetMaestro>> call = serverDataApi.getAllCercanos(latitud,longitud);
+        try {
+            Response<List<PuntoInteresDtoGetMaestro>> response = call.execute();
+            if (response.isSuccessful()) {
+                result = Either.right(response.body());
+            } else {
+                result = Either.left(gson.fromJson(response.errorBody().string(), ApiError.class));
+            }
+        }catch (Exception e){
+            Log.d("descubreespana",null,e);
+            result=Either.left(new ApiError(HttpURLConnection.HTTP_UNAVAILABLE,"Error de conexión"));
+        }
+        return result;
+    }
+
     public Either<ApiError, List<PuntoInteresDtoGetMaestro>> getAllSinActivar()  {
         Either<ApiError,List<PuntoInteresDtoGetMaestro>> result;
         ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
@@ -153,4 +171,6 @@ public class PuntoInteresDao {
         }
         return result;
     }
+
+
 }

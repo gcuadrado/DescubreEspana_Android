@@ -51,6 +51,7 @@ public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         TextView tvnombre = view.findViewById(R.id.tvNombre);
         TextView tvDistancia = view.findViewById(R.id.tvDistancia);
         DecimalFormat df2 = new DecimalFormat("#.##");
+        //Es necesario porque hay que actualizar el InfoWindow para datos asíncronos
         if(lastMarker==null || !lastMarker.equals(marker)) {
             lastMarker=marker;
             LocationServices.getFusedLocationProviderClient(context).getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -60,7 +61,6 @@ public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                     poiLocation.setLatitude(poi.getLatitud());
                     poiLocation.setLongitude(poi.getLongitud());
                     distancia = location.distanceTo(poiLocation);
-                    tvDistancia.setText(df2.format(distancia/1000)+" km");
                     marker.showInfoWindow();
                 }
             });
