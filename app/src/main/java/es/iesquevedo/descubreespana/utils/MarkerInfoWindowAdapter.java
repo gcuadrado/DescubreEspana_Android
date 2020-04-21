@@ -88,4 +88,8 @@ public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 .into(imageView);
         return view;
     }
+
+    public void setLastMarker(Marker lastMarker) {
+        this.lastMarker = lastMarker;
+    }
 }

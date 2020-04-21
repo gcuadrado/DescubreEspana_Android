@@ -157,7 +157,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         //Personalizamos el mapa para que no incluya los places por defecto(negocios etc...)
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
         //Añadimos el InfoWindow personalizado
-        googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(requireContext()));
+        MarkerInfoWindowAdapter infoWindowAdapter = new MarkerInfoWindowAdapter(requireContext());
+        googleMap.setInfoWindowAdapter(infoWindowAdapter);
         //Cargamos los puntos de interés
         getGetPoisAsyncTask().execute();
 
@@ -166,6 +167,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 navController.navigate(HomeFragmentDirections.actionNavigationHomeToDetallePoi((PuntoInteresDtoGetMaestro) marker.getTag()));
+            }
+        });
+        googleMap.setOnInfoWindowCloseListener(new GoogleMap.OnInfoWindowCloseListener() {
+            @Override
+            public void onInfoWindowClose(Marker marker) {
+                infoWindowAdapter.setLastMarker(null);
             }
         });
     }
