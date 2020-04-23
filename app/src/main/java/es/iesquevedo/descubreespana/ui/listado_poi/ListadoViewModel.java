@@ -1,4 +1,4 @@
-package es.iesquevedo.descubreespana.ui.dashboard;
+package es.iesquevedo.descubreespana.ui.listado_poi;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

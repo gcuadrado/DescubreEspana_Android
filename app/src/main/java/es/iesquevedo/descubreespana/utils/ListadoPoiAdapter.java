@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +21,7 @@ import java.util.List;
 import es.iesquevedo.descubreespana.R;
 import es.iesquevedo.descubreespana.config.ConfigOkHttpRetrofit;
 import es.iesquevedo.descubreespana.modelo.dto.PuntoInteresDtoGetMaestro;
-import es.iesquevedo.descubreespana.ui.dashboard.ListadoFragmentDirections;
+import es.iesquevedo.descubreespana.ui.listado_poi.ListadoFragmentDirections;
 
 public class ListadoPoiAdapter extends RecyclerView.Adapter<ListadoPoiAdapter.ListadoPoiViewHolder> {
     private List<PuntoInteresDtoGetMaestro> puntos;

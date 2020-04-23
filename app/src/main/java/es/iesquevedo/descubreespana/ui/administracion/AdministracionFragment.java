@@ -42,7 +42,7 @@ public class AdministracionFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         //Seleccionar el item en la barra de navigación inferior cada vez que se pone este fragment
         BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
-        bottomNavigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_login).setChecked(true);
 
         binding=AdministracionFragmentBinding.inflate(inflater,container,false);
         administracionViewModel = new ViewModelProvider(requireActivity()).get(AdministracionViewModel.class);

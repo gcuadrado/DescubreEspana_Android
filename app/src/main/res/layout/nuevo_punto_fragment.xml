@@ -124,14 +124,27 @@
             android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tv_coste" />
+            android:text="Coste*:" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
         <EditText
             android:id="@+id/etCoste"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="numberDecimal" />
+
+            <CheckBox
+                android:id="@+id/cbGratuito"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿Gratuito?"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textView7"
@@ -139,12 +152,14 @@
             android:layout_height="wrap_content"
             android:text="Horario*:" />
 
+
         <EditText
             android:id="@+id/etHorario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName" />
+
 
         <TextView
             android:id="@+id/textView8"
@@ -168,8 +183,7 @@
         <CheckBox
             android:id="@+id/cbAccesibilidad"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="CheckBox" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btEnviarPunto"

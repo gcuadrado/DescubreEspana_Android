@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         //En el AppBarConfiguration se especifican que fragments serán destinos de primer nivel.
         //Todos aquellos destinos que no sean de primer nivel tendrán una back arrow en la actionbar
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_login, R.id.userAccountFragment)
+                R.id.navigation_home, R.id.navigation_listado, R.id.navigation_login, R.id.userAccountFragment)
                 .build();
         //Se obtiene el navcontroller pasando la activity y el contenedos de los fragments
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.navigation_home:
                                 navController.navigate(R.id.navigation_home);
                             break;
-                        case R.id.navigation_dashboard:
-                            navController.navigate(R.id.navigation_dashboard);
+                        case R.id.navigation_listado:
+                            navController.navigate(R.id.navigation_listado);
                             break;
                         case R.id.navigation_login:
                             if (GetSharedPreferences.getInstance().getCurrentUser(getApplicationContext()) == null) {

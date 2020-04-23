@@ -1,26 +1,23 @@
-package es.iesquevedo.descubreespana.ui.dashboard;
+package es.iesquevedo.descubreespana.ui.listado_poi;
 
 import android.app.AlertDialog;
 import android.location.Location;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -42,6 +39,10 @@ public class ListadoFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        //Seleccionar el item en la barra de navigación inferior cada vez que se pone este fragment
+        BottomNavigationView bottomNavigationView= requireActivity().findViewById(R.id.nav_view);
+        bottomNavigationView.getMenu().findItem(R.id.navigation_listado).setChecked(true);
+
         listadoViewModel = new ViewModelProvider(this).get(ListadoViewModel.class);
         binding = ListadoFragmentBinding.inflate(inflater, container, false);
 

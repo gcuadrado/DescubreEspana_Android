@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="buttonStyle">@style/MyCustomButton</item>
+        <item name="buttonBarButtonStyle">@style/MyCustomButtonBar</item>
     </style>
 
     <style name="MapPickerTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -16,9 +17,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="MyCustomButton" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/buttonshape_unselected</item>
+    <style name="MyCustomButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="MyCustomButtonBar" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
 

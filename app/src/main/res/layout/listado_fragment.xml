@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="es.iesquevedo.descubreespana.ui.dashboard.ListadoFragment">
+    tools:context="es.iesquevedo.descubreespana.ui.listado_poi.ListadoFragment">
 
 
     <androidx.recyclerview.widget.RecyclerView

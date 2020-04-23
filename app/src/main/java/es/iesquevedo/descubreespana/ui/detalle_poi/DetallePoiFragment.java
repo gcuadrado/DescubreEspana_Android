@@ -105,7 +105,11 @@ public class DetallePoiFragment extends Fragment {
                     binding.detallesDireccion.setText(poiDetalle.getDireccion());
                     binding.detallesAccesibilidad.setChecked(poiDetalle.getAccesibilidad());
                     binding.detallesHorario.setText(poiDetalle.getHorario());
-                    binding.detallesCoste.setText(poiDetalle.getCoste().toString());
+                    if(poiDetalle.getCoste()!=-1){
+                        binding.detallesCoste.setText(poiDetalle.getCoste().toString());
+                    }else{
+                        binding.detallesCoste.setText("Gratuito");
+                    }
                     binding.viewPagerGaleria.setAdapter(new VPGaleriaAdapter(poiDetalle));
                     binding.indicator.setViewPager(binding.viewPagerGaleria);
                     if (poiDetalle.getPuntuacion() != null) {

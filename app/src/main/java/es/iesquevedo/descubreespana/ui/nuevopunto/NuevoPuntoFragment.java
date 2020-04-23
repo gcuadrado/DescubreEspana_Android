@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ import io.vavr.control.Either;
 
 public class NuevoPuntoFragment extends Fragment {
 
+    public static final double COSTE_GRATUITO = -1d;
     private NuevoPuntoViewModel nuevoPuntoViewModel;
     private NuevoPuntoFragmentBinding binding;
     private PuntoInteresDtoGetDetalle nuevoPuntoInteres;
@@ -101,7 +103,11 @@ public class NuevoPuntoFragment extends Fragment {
                         nuevoPuntoInteres.setCategoria(binding.spinnerCategoria.getSelectedItem().toString());
                         nuevoPuntoInteres.setDireccion(binding.etDireccion.getText().toString());
                         nuevoPuntoInteres.setContacto(binding.etContacto.getText().toString());
-                        nuevoPuntoInteres.setCoste(Double.parseDouble(binding.etCoste.getText().toString()));
+                        if(!binding.cbGratuito.isChecked()) {
+                            nuevoPuntoInteres.setCoste(Double.parseDouble(binding.etCoste.getText().toString()));
+                        }else{
+                            nuevoPuntoInteres.setCoste(COSTE_GRATUITO);
+                        }
                         nuevoPuntoInteres.setEnlaceInfo(binding.etEnlace.getText().toString());
                         nuevoPuntoInteres.setAccesibilidad(binding.cbAccesibilidad.isChecked());
                         nuevoPuntoInteres.setHorario(binding.etHorario.getText().toString());
@@ -185,6 +191,17 @@ public class NuevoPuntoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 validator.validate();
+            }
+        });
+
+        binding.cbGratuito.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    binding.etCoste.setEnabled(false);
+                }else{
+                    binding.etCoste.setEnabled(true);
+                }
             }
         });
 

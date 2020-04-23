@@ -24,8 +24,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="es.iesquevedo.descubreespana.ui.dashboard.ListadoFragment"
+        android:id="@+id/navigation_listado"
+        android:name="es.iesquevedo.descubreespana.ui.listado_poi.ListadoFragment"
         android:label="@string/title_listado"
         tools:layout="@layout/listado_fragment" >
         <action
