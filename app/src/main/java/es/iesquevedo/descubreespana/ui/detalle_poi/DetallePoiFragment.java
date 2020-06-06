@@ -184,7 +184,7 @@ public class DetallePoiFragment extends Fragment {
                     @Override
                     protected void onPostExecute(Either<ApiError, String> result) {
                         if (result.isRight()) {
-                            navController.popBackStack();
+                            navController.navigate(R.id.navigation_home);
                         } else {
                             Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
                         }

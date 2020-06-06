@@ -167,8 +167,7 @@
         <CheckBox
             android:id="@+id/cbAccesibilidad"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="CheckBox" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btEditarPunto"

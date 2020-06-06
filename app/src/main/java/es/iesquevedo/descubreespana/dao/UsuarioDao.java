@@ -27,12 +27,12 @@ public class UsuarioDao {
     }
 
 
-   public Either<ApiError, UserKeystore> registrarUsuario(UsuarioDtoPost usuario)  {
-        Either<ApiError,UserKeystore> result;
+   public Either<ApiError, UsuarioDtoGet> registrarUsuario(UsuarioDtoPost usuario)  {
+        Either<ApiError,UsuarioDtoGet> result;
        ServerDataApi serverDataApi = retrofit.create(ServerDataApi.class);
-        Call<UserKeystore> call = serverDataApi.registrar(usuario);
+        Call<UsuarioDtoGet> call = serverDataApi.registrar(usuario);
         try {
-            Response<UserKeystore> response = call.execute();
+            Response<UsuarioDtoGet> response = call.execute();
             if (response.isSuccessful()) {
                 result = Either.right(response.body());
             } else {

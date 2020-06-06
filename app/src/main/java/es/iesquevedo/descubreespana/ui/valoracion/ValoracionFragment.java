@@ -37,7 +37,7 @@ public class ValoracionFragment extends Fragment {
     private PuntoInteresDtoGetDetalle poi;
     private NavController navController;
     private AlertDialog dialog;
-    private AddValoracionTask addValoracionTask;
+
 
     public static ValoracionFragment newInstance() {
         return new ValoracionFragment();
@@ -61,7 +61,24 @@ public class ValoracionFragment extends Fragment {
             public void onClick(View v) {
                 if (GetSharedPreferences.getInstance().getCurrentUser(requireContext()) != null) {
                     if (binding.ratingBar.getRating() != 0f) {
-                        addValoracionTask.execute();
+                        new AddValoracionTask(serviciosValoraciones, (int) binding.ratingBar.getRating(), binding.etValoracion.getText().toString(), poi.getIdPuntoInteres()) {
+                            @Override
+                            protected void onPreExecute() {
+                                dialog.show();
+                            }
+
+                            @Override
+                            protected void onPostExecute(Either<ApiError, ValoracionDto> result) {
+                                dialog.dismiss();
+                                if (result.isRight()) {
+                                    Toast.makeText(requireContext(), "Valoración añadida", Toast.LENGTH_LONG).show();
+                                    poi.getValoraciones().add(result.get());
+                                    binding.recyclerValoraciones.getAdapter().notifyDataSetChanged();
+                                } else {
+                                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        }.execute();
                     }else{
                         Toast.makeText(requireContext(),"Es necesario que asignes una puntuación",Toast.LENGTH_SHORT).show();
                     }
@@ -80,22 +97,6 @@ public class ValoracionFragment extends Fragment {
         builder.setCancelable(false); // if you want user to wait for some process to finish,
         builder.setView(R.layout.layout_loading_dialog);
         dialog = builder.create();
-        addValoracionTask = new AddValoracionTask(serviciosValoraciones, (int) binding.ratingBar.getRating(), binding.etValoracion.getText().toString(), poi.getIdPuntoInteres()) {
-            @Override
-            protected void onPreExecute() {
-                dialog.show();
-            }
-
-            @Override
-            protected void onPostExecute(Either<ApiError, ValoracionDto> result) {
-                dialog.dismiss();
-                if (result.isRight()) {
-                    Toast.makeText(requireContext(), "Valoración añadida", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(requireContext(), result.getLeft().getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        };
     }
 
 

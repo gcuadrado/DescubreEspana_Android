@@ -20,8 +20,8 @@ public class ServiciosUsuario {
     }
 
 
-    public Either<ApiError, UserKeystore> registrarUsuario(String email, String password)  {
-        Either<ApiError, UserKeystore> result = null;
+    public Either<ApiError, UsuarioDtoGet> registrarUsuario(String email, String password)  {
+        Either<ApiError, UsuarioDtoGet> result = null;
 
         UsuarioDtoPost usuarioDtoPost = UsuarioDtoPost.builder()
                 .email(email)

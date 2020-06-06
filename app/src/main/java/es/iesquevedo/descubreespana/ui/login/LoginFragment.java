@@ -47,8 +47,6 @@ public class LoginFragment extends Fragment {
     private NavController navController;
     private Validator loginValidator;
     private AlertDialog dialog;
-    private LoginTask loginTask;
-    private ResetPasswordTask resetPasswordTask;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,8 +65,6 @@ public class LoginFragment extends Fragment {
         inicializarViews();
         setListeners();
 
-        // etEmail.setText(loginViewModel.getEmail().getValue());
-        // etPassword.setText(loginViewModel.getmPassword().getValue());
     }
 
     private void inicializarViews() {

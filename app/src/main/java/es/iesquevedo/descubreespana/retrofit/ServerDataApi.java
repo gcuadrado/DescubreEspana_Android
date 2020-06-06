@@ -37,7 +37,7 @@ public interface ServerDataApi {
             @Part("data") PuntoInteresDtoGetDetalle data);
 
     @POST("api/usuario/registro")
-    Call<UserKeystore> registrar(@Body UsuarioDtoPost usuarioDtoPost);
+    Call<UsuarioDtoGet> registrar(@Body UsuarioDtoPost usuarioDtoPost);
 
     @POST("api/usuario/login")
     Call<UsuarioDtoGet> login(@Body UsuarioDtoPost usuario);

@@ -103,7 +103,11 @@ public class EdicionPoiFragment extends Fragment {
                 poi.setCategoria(binding.spinnerCategoria.getSelectedItem().toString());
                 poi.setDireccion(binding.etDireccion.getText().toString());
                 poi.setContacto(binding.etContacto.getText().toString());
-                poi.setCoste(Double.parseDouble(binding.etCoste.getText().toString()));
+                if(!binding.etCoste.getText().toString().equals("Gratuito")) {
+                    poi.setCoste(Double.parseDouble(binding.etCoste.getText().toString()));
+                }else{
+                    poi.setCoste(-1d);
+                }
                 poi.setEnlaceInfo(binding.etEnlace.getText().toString());
                 poi.setAccesibilidad(binding.cbAccesibilidad.isChecked());
                 poi.setHorario(binding.etHorario.getText().toString());
@@ -119,7 +123,11 @@ public class EdicionPoiFragment extends Fragment {
         binding.etInformacion.setText(poi.getInfoDetallada());
         binding.etFecha.setText(poi.getFechaInicio());
         binding.etDireccion.setText(poi.getDireccion());
-        binding.etCoste.setText(poi.getCoste().toString());
+        if(poi.getCoste()==-1){
+            binding.etCoste.setText("Gratuito");
+        }else {
+            binding.etCoste.setText(poi.getCoste().toString());
+        }
         binding.etContacto.setText(poi.getContacto());
         binding.etEnlace.setText(poi.getEnlaceInfo());
         binding.etHorario.setText(poi.getHorario());
